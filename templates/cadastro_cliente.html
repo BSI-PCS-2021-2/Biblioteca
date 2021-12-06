@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+
+{% block main %}
+         <form action="{{ url_for('index') }}" method="post" class="text-center">
+            <label>Login</label>
+            <input type="text" name="userLogin" /> <br>
+            <label>Senha</label>
+            <input type="password" name="userPassword"/> <br>
+            <label>Email</label> 
+            <input type="email" name="userPassword"/>
+         </form>
+         {% endblock %}
