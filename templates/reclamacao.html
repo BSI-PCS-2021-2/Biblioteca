@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block title%}  - Reclamação  {% endblock %}
+
+{% block main %}
+<form action="{{ url_for('form_reclamacao') }}" method="POST" class="text-center">
+    <label>Login</label>
+    <input type="text" name="userLogin" /> <br>
+    <label>Email</label> 
+    <input type="email" name="userEmail"/>
+    <hr>
+    <label>Reclamacao</label> 
+    <input type="text" name="reclamacaoText"/>
+    <div class="form__fieldset">
+       <input
+         class="form__submit form__input"
+         type="submit"
+         value="Continuar"
+       />
+     </div>
+ </form>
+    {% endblock %}

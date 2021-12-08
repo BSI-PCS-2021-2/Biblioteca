@@ -1,15 +1,15 @@
 {% extends "layout.html" %}
 
-{% block title%}  - Cadastro  {% endblock %}
+{% block title%}  - Login  {% endblock %}
 
 {% block main %}
-         <form action="{{ url_for('form_cadastro') }}" method="POST" class="text-center">
+
+         <form action="{{ url_for('login') }}" method="POST" class="text-center">
             <label>Login</label>
-            <input type="text" name="userLogin" /> <br>
+            <input type="text" name="userLogin" id="userLogin" /> <br>
             <label>Senha</label>
-            <input type="password" name="userPassword"/> <br>
-            <label>Email</label> 
-            <input type="email" name="userEmail"/>
+            <input type="password" name="userPassword" id="userPassword"/>
+
             <div class="form__fieldset">
                <input
                  class="form__submit form__input"
