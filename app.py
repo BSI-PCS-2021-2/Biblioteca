@@ -1,5 +1,5 @@
 from flask import Flask, redirect, url_for, render_template, request, flash
-
+import pandas as pd
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
@@ -29,26 +29,29 @@ def form_cliente():
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
-    
+    client_db = pd.read_csv("client_db.csv", sep=";")
     #print(request.form.get("userLogin"))
     #print(email, password)
     if request.method == 'GET':
         return "Login via login form"
 
     if request.method == 'POST':
-        file = open("cadastro_clientes.txt", 'r')
-    
-        if request.form["userLogin"] == cliente["login"] and str(request.form["userPassword"]) == cliente["password"]:
-            print(request.form["userLogin"])
-            flash('Você está logado!')
-            session_cliente["on"] = True
-            #session_cliente["user_email"] = login_email
-            session_cliente["user_login"] = request.form["userLogin"]
-            return render_template('login_sucesso.html')
+        #file = open("cadastro_clientes.txt", 'r')
+        cliente = client_db.loc[client_db["login"] == request.form["userLogin"]]
+        if len(cliente) == 1:
+            if request.form["userLogin"] == cliente["login"].item() and str(request.form["userPassword"]) == str(cliente["senha"].item()):
+                print(request.form["userLogin"])
+                flash('Você está logado!')
+                session_cliente["on"] = True
+                #session_cliente["user_email"] = login_email
+                session_cliente["user_login"] = request.form["userLogin"]
+                return render_template('login_sucesso.html')
+            else:
+                #return redirect(url_for('form_cliente'))
+                return render_template('login_insucesso.html')
         else:
-            #return redirect(url_for('form_cliente'))
             return render_template('login_insucesso.html')
-    #return render_template("login.html")
+        #return render_template("login.html")
 
 @app.route("/cadastro")
 def cadastro_cliente():
@@ -57,24 +60,19 @@ def cadastro_cliente():
 
 @app.route("/form_cadastro_cliente", methods=["GET", "POST"])
 def form_cadastro():
+    client_db = pd.read_csv("client_db.csv", sep=";")
     if request.method == "GET":
         return "Cadastro necessário"
 
     if request.method == "POST":
-        file = open("cadastro_clientes.txt", "r")
-        if request.form["userEmail"] in file.read() or request.form["userLogin"] in file.read() or "@" not in request.form["userEmail"]:
+        #file = open("cadastro_clientes.txt", "r")
+        if request.form["userEmail"] in client_db["email"].tolist() or request.form["userLogin"] in client_db["login"].tolist() or "@" not in request.form["userEmail"]:
             return render_template("cadastro_cliente_insucesso.html")
         
         else:
-            cliente["login"] = request.form["userLogin"]
-            cliente["password"] = request.form["userPassword"]
-            cliente["email"] = request.form["userEmail"]
-            
-            #file = open("cadastro_clientes.txt", "w")
-            #file.write(request.form["userLogin"] + " ")
-            #file.write(request.form["userPassword"] + " ")
-            #file.write(request.form["userEmail"] + " ")
-            #file.close()
+            cliente = pd.DataFrame(columns=['login', 'email', 'senha'], data=[[ request.form["userLogin"], request.form["userEmail"], request.form["userPassword"]]])
+            client_db = client_db.append(cliente)
+            client_db.to_csv("client_db.csv", sep=";")
             return render_template("cadastro_cliente_sucesso.html")
 
 
@@ -123,5 +121,13 @@ def admin():
     return redirect(url_for("index"))
 '''
 
+def create_databases():
+    client_db = pd.DataFrame(columns=['login', 'email', 'senha'], data=[["ppnery", "ppnery95@gmail.com", "12345"]])
+    client_db.to_csv("client_db.csv",  sep=";")
+
+    funcionario_db = pd.DataFrame(columns=['login', 'email', 'senha', 'matricula'], data=[["funcionario1", "funcionario@gmail.com", "12345", "000001"]])
+    funcionario_db.to_csv("funcionario_db.csv",  sep=";")
+
 if __name__ == "__main__":
+    create_databases()
     app.run()
