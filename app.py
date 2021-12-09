@@ -66,7 +66,7 @@ def form_cadastro():
 
     if request.method == "POST":
         #file = open("cadastro_clientes.txt", "r")
-        if request.form["userEmail"] in client_db["email"].tolist() or request.form["userLogin"] in client_db["login"].tolist() or "@" not in request.form["userEmail"]:
+        if request.form["userEmail"] in client_db["email"].tolist() or request.form["userLogin"] in client_db["login"].tolist() or "@" not in request.form["userEmail"] or len(request.form["userPassword"]) < 5:
             return render_template("cadastro_cliente_insucesso.html")
         
         else:
@@ -82,9 +82,13 @@ def reclamacao():
 
 @app.route("/reclamacao_form", methods=["GET", "POST"])
 def form_reclamacao():
+    client_db = pd.read_csv("client_db.csv", sep=";")
     if request.method == "POST":
-        print(request.form["userLogin"], request.form["userEmail"], request.form["reclamacaoText"])
-        return render_template("obrigado.html")
+        if len(request.form["reclamacaoText"]) == 0 or request.form["userLogin"] not in client_db["login"].tolist():
+            print(request.form["userLogin"], request.form["userEmail"], request.form["reclamacaoText"])
+            return render_template("reclamacao_insucesso.html")
+        else:
+            return render_template("obrigado.html")
 
 @app.route("/form_funcionario")
 def form_funcionario():
@@ -99,7 +103,7 @@ def login_funcionario():
 
     if request.method == 'POST':
         if len(str(request.form["userLogin"])) == 6:
-            if str(request.form["userLogin"]) == funcionario_login and request.form["userPassword"] == login_password:
+            if str(request.form["userLogin"]) == funcionario_login and str(request.form["userPassword"]) == str(login_password):
                 print(request.form["userLogin"])
                 flash('Você está logado!')
                 session_funcionario["on"] = True
