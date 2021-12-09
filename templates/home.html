@@ -1,34 +1,16 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-   <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-      <meta name="description" content="Software para controle da Biblioteca">
-      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
-      <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-      <title>Biblioteca</title>
-   </head>
-   <body>
-      <header>
-         <nav>
-            <h1 class="text-center">Biblioteca</h1>
-         </nav>
-         <hr>
-      </header>
-      <main>
+{% extends "layout.html" %}
+
+{% block main %}
          <div class="buttonHolder">
          <form action="{{ url_for('form_cliente') }}">
             <input type="submit" value="Login" />
         </form>
         <form action="{{ url_for('cadastro_cliente') }}">
-         <input type="submit" value="Registre-se" />
+         <input type="submit" value="Cadastrar" />
      </form>
      <form action="{{ url_for('reclamacao') }}">
-      <input type="submit" value="Reclamação ou sugestão" />
+      <input type="submit" value="Reclamar" />
   </form>
    </div>
       </main>
-      <footer>
-      </footer>
-   </body>
-</html>
+      {% endblock %}
