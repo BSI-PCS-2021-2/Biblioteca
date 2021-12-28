@@ -1,5 +1,8 @@
 from flask import Flask, redirect, url_for, render_template, request, flash
 import pandas as pd
+import sqlite3
+from hashlib import md5
+from db import create_db
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
@@ -60,20 +63,38 @@ def cadastro_cliente():
 
 @app.route("/form_cadastro_cliente", methods=["GET", "POST"])
 def form_cadastro():
+    conn = sqlite3.connect('biblioteca.db')
+    cursor = conn.cursor()
+
+
     client_db = pd.read_csv("client_db.csv", sep=";")
     if request.method == "GET":
         return "Cadastro necessário"
 
     if request.method == "POST":
         #file = open("cadastro_clientes.txt", "r")
-        if request.form["userEmail"] in client_db["email"].tolist() or request.form["userLogin"] in client_db["login"].tolist() or "@" not in request.form["userEmail"] or len(request.form["userPassword"]) < 5:
+        sql = """
+            SELECT * FROM user WHERE email = {} OR login = {}
+        """.format(request.form["userEmail"], request.form["userLogin"])
+        cursor.execute(sql)
+        if len(cursor.fetchall()) != 0:
             return render_template("cadastro_cliente_insucesso.html")
+        #if request.form["userEmail"] in client_db["email"].tolist() or request.form["userLogin"] in client_db["login"].tolist() or "@" not in request.form["userEmail"] or len(request.form["userPassword"]) < 5:
+        #    return render_template("cadastro_cliente_insucesso.html")
         
         else:
-            cliente = pd.DataFrame(columns=['login', 'email', 'senha'], data=[[ request.form["userLogin"], request.form["userEmail"], request.form["userPassword"]]])
-            client_db = client_db.append(cliente)
-            client_db.to_csv("client_db.csv", sep=";")
-            return render_template("cadastro_cliente_sucesso.html")
+
+            password = md5(request.form["userPassword"].encode())
+            sql = """
+                INSERT INTO user (email, login, senha) VALUES ({email}, {login}, {senha})
+            """.format(email=request.form["userEmail"], login=request.form["userLogin"], senha=password.hexdigest())
+            cursor.execute(sql)
+            conn.commit()
+        #else:
+        #    cliente = pd.DataFrame(columns=['login', 'email', 'senha'], data=[[ request.form["userLogin"], request.form["userEmail"], request.form["userPassword"]]])
+        #    client_db = client_db.append(cliente)
+        #    client_db.to_csv("client_db.csv", sep=";")
+        #    return render_template("cadastro_cliente_sucesso.html")
 
 
 @app.route("/reclamacao")
@@ -125,13 +146,6 @@ def admin():
     return redirect(url_for("index"))
 '''
 
-def create_databases():
-    client_db = pd.DataFrame(columns=['login', 'email', 'senha'], data=[["ppnery", "ppnery95@gmail.com", "12345"]])
-    client_db.to_csv("client_db.csv",  sep=";")
-
-    funcionario_db = pd.DataFrame(columns=['login', 'email', 'senha', 'matricula'], data=[["funcionario1", "funcionario@gmail.com", "12345", "000001"]])
-    funcionario_db.to_csv("funcionario_db.csv",  sep=";")
-
 if __name__ == "__main__":
-    create_databases()
+    create_db()
     app.run()
