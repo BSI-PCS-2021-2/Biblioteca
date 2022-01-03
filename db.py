@@ -26,6 +26,18 @@ def create_db():
     """.format(email)
 
     cur.execute(sql)
+
+    sql = """
+        INSERT INTO funcionario (name, email, matricula, senha) VALUES ('Sr Funcionario', 'funcionario@biblioteca.com', '000001', '{}')
+    """.format(password)
+
+    cur.execute(sql)
+    conn.commit()
     cur.close()
 
-create_db()
+def connect_db():
+    conn = sqlite3.connect('biblioteca.db')
+    cur = conn.cursor()
+    return conn, cur
+
+#create_db()

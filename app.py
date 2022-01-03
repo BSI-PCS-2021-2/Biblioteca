@@ -5,6 +5,10 @@ from hashlib import md5
 import json
 import os
 
+# Import das classes criadas para o projeto
+from cliente import Cliente
+from funcionario import Funcionario
+
 from oauthlib.oauth2 import WebApplicationClient
 import requests
 
@@ -16,8 +20,13 @@ from flask_login import (
     logout_user,
 )
 
-from db import create_db
+session_cliente = False
 
+session_funcionario = False
+
+from db import *
+
+# Nao é a melhor maneira de tratar secret keys
 GOOGLE_CLIENT_ID = "100201225639-6v55q25o4lrjl889uievo0fqgrnpid0j.apps.googleusercontent.com"
 GOOGLE_CLIENT_SECRET = "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"
 GOOGLE_DISCOVERY_URL = (
@@ -45,32 +54,39 @@ def form_cliente():
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
-    conn = sqlite3.connect('biblioteca.db')
-    cursor = conn.cursor()
+    conn, cursor = connect_db()
+    global session_cliente
+    #conn = sqlite3.connect('biblioteca.db')
+    #cursor = conn.cursor()
 
     if request.method == 'GET':
         return "Login via login form"
 
     if request.method == 'POST':
-        sql = """ 
-            SELECT * FROM user WHERE login = '{}';
-        """.format(request.form["userLogin"])
-        cursor.execute(sql)
-        
-        results = cursor.fetchone()
-        
-        if len(results) == 0:
+        #sql = """ 
+        #    SELECT * FROM user WHERE login = '{}';
+        #""".format(request.form["userLogin"])
+        #cursor.execute(sql)
+        password = md5(request.form["userPassword"].encode())
+        password = password.hexdigest()
+        cliente = Cliente(login=request.form["userLogin"], password=password)
+        results = cliente.get()
+        if not results:
+            
             conn.close()
             return render_template('login_insucesso.html')
 
         else:
-            password = md5(request.form["userPassword"].encode())
-            password = password.hexdigest()
             
-            if results[2] == request.form["userLogin"] and results[3] == password:
+            if cliente.authenticate():
+                
+                session_cliente = True
+                cliente.session_on()
                 conn.close()
-                return render_template('login_sucesso.html')
+                return render_template('login_sucesso.html')    
+
             else:
+                
                 conn.close()
                 return render_template('login_insucesso.html')
 
@@ -138,13 +154,15 @@ def login_g():
 
 @app.route("/cadastro")
 def cadastro_cliente():
-    
+    global session_cliente
+    print(session_cliente)
+    if session_cliente:
+        return redirect(url_for('index'))
     return render_template("cadastro_cliente.html")
 
 @app.route("/form_cadastro_cliente", methods=["GET", "POST"])
 def form_cadastro():
-    conn = sqlite3.connect('biblioteca.db')
-    cursor = conn.cursor()
+    conn, cursor = connect_db()
 
     if request.method == "GET":
         return "Cadastro necessário"
@@ -154,7 +172,8 @@ def form_cadastro():
             SELECT * FROM user WHERE email = '{}' OR login = '{}'
         """.format(request.form["userEmail"], request.form["userLogin"])
         cursor.execute(sql)
-        if len(cursor.fetchall()) != 0:
+        cliente = cursor.fetchone()
+        if cliente is not None:
             conn.close()
             return render_template("cadastro_cliente_insucesso.html")
         
@@ -162,31 +181,46 @@ def form_cadastro():
 
             password = md5(request.form["userPassword"].encode())
             password = password.hexdigest()
-            login = request.form["userLogin"]
-            email = request.form["userEmail"]
 
-            sql = """
-                INSERT INTO user (email, login, senha) VALUES ('{email}', '{login}', '{senha}')
-            """.format(email=email, login=login, senha=password)
-            cursor.execute(sql)
-            conn.commit()
-            conn.close()
+            cliente = Cliente(email=request.form["userEmail"], login=request.form["userLogin"], password=password)
+            cliente.insert_into_db()
+            print(cliente.get())
+            #sql = """
+            #    INSERT INTO user (email, login, senha) VALUES ('{email}', '{login}', '{senha}')
+            #""".format(email=email, login=login, senha=password)
+            #cursor.execute(sql)
+            #conn.commit()
+            #conn.close()
             return render_template("cadastro_cliente_sucesso.html")
 
 
 @app.route("/reclamacao")
 def reclamacao():
-    return render_template("reclamacao.html")
+    global session_cliente 
+    print(session_cliente)
+    if session_cliente:
+        return render_template("reclamacao.html")
+    else:
+        return redirect( url_for('index') )
 
 @app.route("/reclamacao_form", methods=["GET", "POST"])
 def form_reclamacao():
-    client_db = pd.read_csv("client_db.csv", sep=";")
+    conn, cur = connect_db()
+    cliente = Cliente(login=request.form["userLogin"])
+    email, login, _ = cliente.get_data()
+    #client_db = pd.read_csv("client_db.csv", sep=";")
     if request.method == "POST":
-        if len(request.form["reclamacaoText"]) == 0 or request.form["userLogin"] not in client_db["login"].tolist():
+        if request.form["reclamacaoText"] is None or cliente.get() is False:
+        #if len(request.form["reclamacaoText"]) == 0 or request.form["userLogin"] not in client_db["login"].tolist():
             print(request.form["userLogin"], request.form["userEmail"], request.form["reclamacaoText"])
             return render_template("reclamacao_insucesso.html")
         else:
+            
             return render_template("obrigado.html")
+
+@app.route("/cadastro_funcionario")
+def cadastro_funcionario():
+    return render_template("cadastro_funcionario.html")
 
 @app.route("/form_funcionario")
 def form_funcionario():
