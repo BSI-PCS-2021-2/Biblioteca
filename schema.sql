@@ -22,9 +22,20 @@ DROP TABLE IF EXISTS reclamacao;
 
 CREATE TABLE reclamacao (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    cliente_email TEXT UNIQUE NOT NULL,
-    cliente_login TEXT UNIQUE NOT NULL,
+    cliente_email TEXT NOT NULL,
+    cliente_login TEXT NOT NULL,
     reclamacao TEXT NOT NULL,
     data_reclamacao TEXT NOT NULL DEFAULT (datetime('now')),
     respondida BOOLEAN DEFAULT(FALSE)
+);
+
+DROP TABLE IF EXISTS obra;
+
+CREATE TABLE obra (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    titulo TEXT UNIQUE NOT NULL,
+    nome_autor TEXT UNIQUE NOT NULL,
+    assunto TEXT NOT NULL,
+    data_publicacao TEXT NOT NULL,
+    posicao TEXT NOT NULL
 );

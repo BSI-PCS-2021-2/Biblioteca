@@ -1,11 +1,13 @@
 {% extends "layout.html" %}
 
-{% block title%}  - Cadastro  {% endblock %}
+{% block title%}  - Cadastro de Funcionário  {% endblock %}
 
 {% block main %}
-         <form action="{{ url_for('form_cadastro') }}" method="POST" class="text-center">
-            <label>Login</label>
-            <input type="text" name="userLogin" /> <br>
+         <form action="{{ url_for('form_cadastro_funcionario') }}" method="POST" class="text-center">
+            <label>Nome</label>
+            <input type="text" name="userName" /> <br>
+            <label>Matricula</label>
+            <input type="text" name="userMatricula" /> <br>
             <label>Senha</label>
             <input type="password" name="userPassword"/> <br>
             <label>Email</label> 
@@ -18,4 +20,6 @@
                />
              </div>
          </form>
+
+         {{session_funcionario}}
          {% endblock %}

@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title%}  - Manutenção de obras {% endblock %}
+
+{% block main %}
+         <div class="buttonHolder">
+         <form action="{{ url_for('tela_cadastro_obra') }}">
+            <input type="submit" value="Cadastrar obras" />
+        </form>
+        <form action="{{ url_for('tela_consulta_obras') }}">
+         <input type="submit" value="Consultar disponibilidade" />
+     </form>
+     <form action="{{ url_for('tela_remocao_obra') }}">
+      <input type="submit" value="Excluir obra" />
+  </form>
+   </div>
+      </main>
+      {% endblock %}

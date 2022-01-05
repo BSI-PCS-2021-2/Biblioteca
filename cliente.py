@@ -81,15 +81,6 @@ class Cliente(UserMixin):
 
         return False
 
-    def get_session(self):
-        return self.session
-
-    def session_on(self):
-        self.session = True
-
-    def session_off(self):
-        self.session = False
-
 #create_db()
 #password = md5("12345".encode())
 #password = password.hexdigest()

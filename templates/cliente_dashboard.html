@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block main %}
+
+<h2>Seja bem vindo, {{login}}!</h2>
+         <div class="buttonHolder">
+    <!--     <form action="{{ url_for('tela_obras') }}">
+            <input type="submit" value="Manutenção de obras" />
+        </form>
+        <form action="{{ url_for('cadastro_cliente') }}">
+         <input type="submit" value="Cadastrar" /> -->
+     </form>
+     <form action="{{ url_for('reclamacao') }}">
+      <input type="submit" value="Reclamar" />
+  </form>
+   </div>
+   <div class="buttonHolder">
+    <form action="{{ url_for('logout') }}">
+       <input type="submit" value="Deslogar" />
+   </form>
+   </div>
+      </main>
+      {% endblock %}

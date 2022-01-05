@@ -32,6 +32,21 @@ def create_db():
     """.format(password)
 
     cur.execute(sql)
+
+    sql = """
+        INSERT INTO obra (titulo, nome_autor, assunto, data_publicacao, posicao) 
+        VALUES ('Obra de Teste', 'Valeska Popozuda', 'História', '2020-01-01', 'A1')
+    """.format(password)
+
+    cur.execute(sql)
+
+    sql = """
+        INSERT INTO reclamacao (cliente_email, cliente_login, reclamacao) 
+        VALUES ('ppnery95@gmail.com', 'ppnery', 'Recomendo a compra do livro "X"')
+    """.format(password)
+
+    cur.execute(sql)
+
     conn.commit()
     cur.close()
 

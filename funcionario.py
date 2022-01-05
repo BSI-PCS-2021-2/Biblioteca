@@ -9,7 +9,7 @@ from db import *
 class Funcionario(UserMixin):
     def __init__(self, name=None, email=None, matricula=None, password=None):
         #self.id = id_
-        #self.name = name
+        self.name = name
         self.email = email
         self.matricula = matricula
         self.password = password
@@ -18,16 +18,33 @@ class Funcionario(UserMixin):
         conn = sqlite3.connect('biblioteca.db')
         cursor = conn.cursor()
 
-        sql = "SELECT * FROM funcionario WHERE email = '{}' OR matricula = '{}';".format(email, matricula)
+        sql = "SELECT * FROM funcionario WHERE email = '{}' OR matricula = '{}';".format(self.email, self.matricula)
 
         funcionario = cursor.execute(sql).fetchone()
         if not funcionario:
             return None
 
         funcionario = Funcionario(
-            email=funcionario[1], matricula=funcionario[2], password=funcionario[3]
+            name=funcionario[1], email=funcionario[2], matricula=funcionario[3], password=funcionario[4]
         )
         return funcionario
+
+    def insert_into_db(self):
+        conn, cursor = connect_db()
+
+        sql = "SELECT * FROM funcionario WHERE email = '{}' OR matricula = '{}';".format(self.email, self.matricula)
+
+        funcionario = cursor.execute(sql).fetchone()
+        
+        if not funcionario:
+
+            sql = """
+                INSERT INTO funcionario (name, email, matricula, senha) VALUES ('{}', '{}', '{}', '{}')
+            """.format(self.name, self.email, self.matricula, self.password)
+
+            cursor.execute(sql)
+            conn.commit()
+            conn.close()
 
     def create(self):
         conn = sqlite3.connect('biblioteca.db')
@@ -40,6 +57,22 @@ class Funcionario(UserMixin):
         cursor.execute(sql)
         conn.commit()
         conn.close()
+
+    def authenticate(self):
+        conn, cursor = connect_db()
+
+        sql = "SELECT * FROM funcionario WHERE matricula = '{}';".format(self.matricula)
+
+        funcionario = cursor.execute(sql).fetchone()
+        if not funcionario:
+            return False
+
+        else:
+            if funcionario[4] == self.password:
+                #self.session = True
+                return True
+
+        return False
 
 #create_db()
 #password = md5("12345".encode())
