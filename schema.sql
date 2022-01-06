@@ -39,3 +39,15 @@ CREATE TABLE obra (
     data_publicacao TEXT NOT NULL,
     posicao TEXT NOT NULL
 );
+
+DROP TABLE IF EXISTS emprestimo;
+
+CREATE TABLE emprestimo (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    cliente_id INTEGER NOT NULL,
+    obra_id INTEGER NOT NULL,
+    data_emprestimo TEXT NOT NULL DEFAULT (datetime('now')),
+    data_devolucao TEXT,
+    devolvido BOOLEAN DEFAULT(FALSE),
+    avaliacao INTEGER DEFAULT(0)
+);

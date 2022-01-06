@@ -69,8 +69,44 @@ class Obra():
         cursor.execute(sql)
         conn.commit()
         conn.close()
+
+def get_emprestimo(client_id):
+    conn, cursor = connect_db()
+
+    sql = """
+        SELECT titulo, DATE(data_emprestimo), DATE(data_devolucao), emprestimo.id
+        FROM emprestimo INNER JOIN obra ON obra_id = obra.id 
+         WHERE cliente_id = {} ORDER BY data_emprestimo ASC LIMIT 1
+    """.format(client_id)
+
+    results = cursor.execute(sql).fetchone()
+
+    return results
+
+def avaliar_emprestimo(emprestimo_id, avaliacao):
+    conn, cursor = connect_db()
+
+    if avaliacao == 1:
+        sql = """
+            UPDATE emprestimo SET avaliacao = 1 WHERE id = {}
+        """.format(emprestimo_id)
+
+        cursor.execute(sql)
+        conn.commit()
+        conn.close()
     
-#create_db()
+    if avaliacao == 2:
+        sql = """
+            UPDATE emprestimo SET avaliacao = 2 WHERE id = {}
+        """.format(emprestimo_id)
+
+        cursor.execute(sql)
+        conn.commit()
+        conn.close()
+    
+    
+create_db()
+print(get_emprestimo(1))
 #o = Obra(titulo="Teste 1", autor="Nery Pedro", assunto="Terror", data_publicacao="2019-02-01", posicao="A2")
 #o.insert_into_db()
 #print(o.get())

@@ -8,7 +8,7 @@ import os
 # Import das classes criadas para o projeto
 from cliente import Cliente
 from funcionario import Funcionario
-from obra import Obra
+from obra import *
 from reclamacao import *
 
 from oauthlib.oauth2 import WebApplicationClient
@@ -67,6 +67,7 @@ def login():
             if cliente.authenticate():
                 
                 session_cliente = True
+                session["cliente_id"] = results[0]
                 #cliente.session_on()
                 conn.close()
                 return render_template('cliente_dashboard.html', login=request.form["userLogin"])    
@@ -207,6 +208,33 @@ def form_reclamacao():
                 )
             reclamacao.insert_into_db()
             return render_template("obrigado.html")
+    
+@app.route("/cliente/check-avaliar")
+def tela_avaliacao():
+    global session_cliente
+    if session_cliente:
+        session["emprestimo"] = get_emprestimo(session["cliente_id"]) 
+        emprestimo = get_emprestimo(session["cliente_id"])
+        return render_template("avaliar_obra.html", emprestimo=emprestimo)
+    else:
+        return redirect( url_for("index") )
+
+@app.route("/cliente/avaliar-positivo")
+def avaliar_positivo():
+    conn, cursor = connect_db()
+
+    avaliar_emprestimo(emprestimo_id=session["emprestimo"][3], avaliacao=2)
+
+    return render_template("avaliacao_positiva.html")
+
+@app.route("/cliente/avaliar-negativo")
+def avaliar_negativo():
+    conn, cursor = connect_db()
+
+    avaliar_emprestimo(emprestimo_id=session["emprestimo"][3], avaliacao=1)
+
+    return render_template("avaliacao_negativa.html")
+        
 
 @app.route("/cadastro_funcionario")
 def cadastro_funcionario():
@@ -446,6 +474,7 @@ def logout():
     if session_funcionario:
         session_funcionario = False
         return redirect( url_for("index") )
+    return redirect( url_for("index") )
 
 
 if __name__ == "__main__":

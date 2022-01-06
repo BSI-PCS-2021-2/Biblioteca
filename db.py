@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import datetime, timedelta
 from hashlib import md5
 
 def create_db():
@@ -36,14 +37,21 @@ def create_db():
     sql = """
         INSERT INTO obra (titulo, nome_autor, assunto, data_publicacao, posicao) 
         VALUES ('Obra de Teste', 'Valeska Popozuda', 'História', '2020-01-01', 'A1')
-    """.format(password)
+    """
 
     cur.execute(sql)
 
     sql = """
         INSERT INTO reclamacao (cliente_email, cliente_login, reclamacao) 
         VALUES ('ppnery95@gmail.com', 'ppnery', 'Recomendo a compra do livro "X"')
-    """.format(password)
+    """
+
+    cur.execute(sql)
+
+    sql = """
+        INSERT INTO emprestimo (cliente_id, obra_id, data_emprestimo, data_devolucao) 
+        VALUES (1, 1, '{}', '{}')
+    """.format(datetime.now() + timedelta(days=-14), datetime.now())
 
     cur.execute(sql)
 
