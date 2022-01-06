@@ -9,7 +9,7 @@ from db import *
 class Cliente(UserMixin):
     def __init__(self, name=None, email=None, login=None, password=None):
         #self.id = id_
-        #self.name = name
+        self.name = name
         self.email = email
         self.login = login
         self.password = password
@@ -58,8 +58,8 @@ class Cliente(UserMixin):
         if not cliente:
 
             sql = """
-                INSERT INTO cliente (email, login, senha) VALUES ('{}', '{}', '{}')
-            """.format(self.email, self.login, self.password)
+                INSERT INTO cliente (name, email, login, senha) VALUES ('{}', '{}', '{}', '{}')
+            """.format(self.name, self.email, self.login, self.password)
 
             cursor.execute(sql)
             conn.commit()

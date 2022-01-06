@@ -164,11 +164,12 @@ def form_cadastro():
 
     if request.method == "POST":
         sql = """
-            SELECT * FROM user WHERE email = '{}' OR login = '{}'
+            SELECT * FROM cliente WHERE email = '{}' OR login = '{}'
         """.format(request.form["userEmail"], request.form["userLogin"])
         cursor.execute(sql)
         cliente = cursor.fetchone()
-        if cliente is not None:
+        l = [request.form["userName"], request.form["userEmail"], request.form["userLogin"], request.form["userPassword"]]
+        if cliente is not None or '' in l:
             conn.close()
             return render_template("cadastro_cliente_insucesso.html")
         
@@ -177,7 +178,7 @@ def form_cadastro():
             password = md5(request.form["userPassword"].encode())
             password = password.hexdigest()
 
-            cliente = Cliente(email=request.form["userEmail"], login=request.form["userLogin"], password=password)
+            cliente = Cliente(name=request.form["userName"], email=request.form["userEmail"], login=request.form["userLogin"], password=password)
             cliente.insert_into_db()
             print(cliente.get())
             #sql = """

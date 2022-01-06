@@ -14,7 +14,7 @@ def create_db():
     password = md5(b'12345')
     password = password.hexdigest()
     sql = """ 
-        INSERT INTO cliente (email, login, senha) VALUES ('ppnery95@gmail.com', 'ppnery', '{}');
+        INSERT INTO cliente (name, email, login, senha) VALUES ('Pedro Nery', 'ppnery95@gmail.com', 'ppnery', '{}');
     """.format(password)
 
     cur.execute(sql)
@@ -36,7 +36,7 @@ def create_db():
 
     sql = """
         INSERT INTO obra (titulo, nome_autor, assunto, data_publicacao, posicao) 
-        VALUES ('Obra de Teste', 'Valeska Popozuda', 'História', '2020-01-01', 'A1')
+        VALUES ('Obra de Teste', 'Tiago Nunes', 'História', '2020-01-01', 'A1')
     """
 
     cur.execute(sql)

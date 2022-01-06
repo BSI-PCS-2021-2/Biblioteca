@@ -2,10 +2,10 @@ DROP TABLE IF EXISTS cliente;
 
 CREATE TABLE cliente (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    --name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     login TEXT UNIQUE NOT NULL,
-    senha TEXT NOT NULL
+    senha TEXT NOT NULL,
+    name TEXT NOT NULL
 );
 
 DROP TABLE IF EXISTS funcionario;
