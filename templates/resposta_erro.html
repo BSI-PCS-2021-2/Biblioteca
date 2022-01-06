@@ -4,4 +4,11 @@
 
     <h2 class="text-center"> Erro! Campo de resposta não preenchido! </h2>
 
+    <div class="buttonHolder">
+        <form action="{{ url_for('func_check_dashboard') }}">
+           <input type="submit" value="Retornar ao início" />
+       </form>
+       
+  </div>
+
 {% endblock %}

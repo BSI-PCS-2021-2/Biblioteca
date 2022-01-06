@@ -68,6 +68,7 @@ def login():
                 
                 session_cliente = True
                 session["cliente_id"] = results[0]
+                session["user_login"] = request.form["userLogin"]
                 #cliente.session_on()
                 conn.close()
                 return render_template('cliente_dashboard.html', login=request.form["userLogin"])    
@@ -76,6 +77,13 @@ def login():
                 
                 conn.close()
                 return render_template('login_insucesso.html')
+
+@app.route("/cliente/dashboard")
+def cliente_dashboard():
+    global session_cliente
+    if session_cliente:
+        return render_template('cliente_dashboard.html', login=session["user_login"])
+    return redirect( url_for("index") )
 
 @app.route("/login-google")
 def login_google():
@@ -194,14 +202,15 @@ def reclamacao():
 def form_reclamacao():
     conn, cur = connect_db()
     cliente = Cliente(login=request.form["userLogin"])
-    
+    print('test')
     if request.method == "POST":
-        if request.form["reclamacaoText"] is None or cliente.get() is None:
-        
+        if len(request.form["reclamacaoText"]) == 0 or cliente.get() is None:
+            print('test2')
             print(request.form["userLogin"], request.form["userEmail"], request.form["reclamacaoText"])
             return render_template("reclamacao_insucesso.html")
         else:
             #email, login, _ = cliente.get_data()
+            print('test3')
             reclamacao = Reclamacao(
                 login=request.form["userLogin"], recl=request.form["reclamacaoText"],
                 email=request.form["userEmail"]
@@ -257,7 +266,8 @@ def form_cadastro_funcionario():
         """.format(request.form["userEmail"])
         cursor.execute(sql)
         funcionario = cursor.fetchone()
-        if funcionario is not None:
+        l = [request.form["userEmail"], request.form["userMatricula"], request.form["userPassword"]]
+        if funcionario is not None or '' in l:
             conn.close()
             return render_template("cadastro_cliente_insucesso.html")
         
@@ -353,8 +363,10 @@ def cadastrar_obra():
         obra = Obra(titulo=request.form["obraName"], autor=request.form["authorName"],
                 assunto=request.form["assunto"], data_publicacao=request.form["date"],
                 posicao=request.form["posicao"])
-        
-        if obra.get():
+        l = [request.form["obraName"], request.form["authorName"], request.form["assunto"],
+            request.form["date"], request.form["posicao"]]
+        print(l)
+        if obra.get() or '' in l:
             return render_template("cadastro_obra_insucesso.html", titulo=request.form["obraName"])
         
         else:

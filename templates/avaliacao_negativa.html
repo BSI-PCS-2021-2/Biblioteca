@@ -4,4 +4,11 @@
 
     <h2 class="text-center"> A obra {{session["emprestimo"][0]}} foi avaliada negativamente! </h2>
 
+    <div class="buttonHolder">
+        <form action="{{ url_for('cliente_dashboard') }}">
+           <input type="submit" value="Retornar ao dashboard" />
+       </form>
+       
+  </div>
+
 {% endblock %}
