@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block title%}  - Login  {% endblock %}
+
+{% block main %}
+
+         <form action="{{ url_for('login') }}" method="POST" class="text-center">
+            <label>Login</label>
+            <input type="text" name="userLogin" id="userLogin" /> <br>
+            <label>Senha</label>
+            <input type="password" name="userPassword" id="userPassword"/>
+
+            <div class="form__fieldset">
+               <input
+                 class="form__submit form__input"
+                 type="submit"
+                 value="Login"
+               />
+             </div>
+         </form>
+         {% endblock %}
