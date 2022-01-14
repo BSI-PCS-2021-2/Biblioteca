@@ -270,7 +270,7 @@ def form_cadastro_funcionario():
         l = [request.form["userEmail"], request.form["userMatricula"], request.form["userPassword"]]
         if funcionario is not None or '' in l:
             conn.close()
-            return render_template("cadastro_cliente_insucesso.html")
+            return render_template("cadastro_funcionario_insucesso.html")
         
         else:
 
@@ -286,7 +286,7 @@ def form_cadastro_funcionario():
             #cursor.execute(sql)
             #conn.commit()
             #conn.close()
-            return render_template("cadastro_cliente_sucesso.html")
+            return render_template("cadastro_funcionario_sucesso.html")
 
 @app.route("/form_funcionario")
 def form_funcionario():

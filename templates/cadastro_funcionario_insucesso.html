@@ -2,7 +2,8 @@
 
 {% block main %}
 
-    <h2 class="text-center"> Cadastro da obra {{titulo}} feito com sucesso! </h2>
+    <h2 class="text-center"> Erro! Login/email podem já estar cadastrados no sistema! A senha necessita de no mínimo 5 caracteres! </h2>
+
 
     <div class="buttonHolder">
         <form action="{{ url_for('func_check_dashboard') }}">
@@ -10,5 +11,4 @@
        </form>
        
   </div>
-
 {% endblock %}
