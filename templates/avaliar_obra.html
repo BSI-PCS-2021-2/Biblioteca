@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title%}  - Avaliação de obras  {% endblock %}
+
+{% block main %}
+         <table>
+             <tr>
+                 <th>Título</th>
+                 <th>Data de empréstimo</th>
+                 <th>Data de devolução</th>
+                 
+             </tr>
+             <tr>
+                <td>{{emprestimo[0]}}</td>
+                <td>{{emprestimo[1]}}</td>
+                <td>{{emprestimo[2]}}</td>
+                
+            </tr>
+         </table>
+         <hr>
+         <div class="buttonHolder">
+            <form action="{{ url_for('avaliar_positivo') }}">
+               <input type="submit" value="Gostei da obra" />
+           </form>
+           <!--<form action="{{ url_for('cadastro_cliente') }}">
+            <input type="submit" value="Cadastrar" /> 
+        </form>-->
+        <form action="{{ url_for('avaliar_negativo') }}">
+         <input type="submit" value="Não gostei da obra" />
+     </form>
+         {% endblock %}

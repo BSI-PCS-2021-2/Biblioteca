@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block title%}  - Reclamacao  {% endblock %}
+
+{% block main %}
+         <table>
+             <tr>
+                 <th>Cliente</th>
+                 <th>Email</th>
+                 <th>Data da reclamação</th>
+                 <th>Reclamação</th>
+                 
+             </tr>
+             <tr>
+                <td>{{reclamacao[2]}}</td>
+                <td>{{reclamacao[1]}}</td>
+                <td>{{reclamacao[4]}}</td>
+                <td>{{reclamacao[3]}}</td>
+                
+            </tr>
+         </table>
+         <hr>
+         <form action="{{ url_for('responder_reclamacao') }}" method="POST" class="text-center">
+            
+            <label>Campo para a resposta à reclamação</label> 
+            <input type="text" name="reclamacaoText"/>
+            <div class="form__fieldset">
+               <input
+                 class="form__submit form__input"
+                 type="submit"
+                 value="Responder"
+               />
+             </div>
+         </form>
+         {% endblock %}

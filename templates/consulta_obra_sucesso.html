@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block title%}  - Consulta de obras  {% endblock %}
+
+{% block main %}
+         <table>
+             <tr>
+                 <th>Título</th>
+                 <th>Autor</th>
+                 <th>Assunto</th>
+                 <th>Data de Publicação</th>
+                 <th>Posição</th>
+             </tr>
+             <tr>
+                <td>{{titulo}}</td>
+                <td>{{autor}}</td>
+                <td>{{assunto}}</td>
+                <td>{{data}}</td>
+                <td>{{posicao}}</td>
+            </tr>
+         </table>
+         {% endblock %}

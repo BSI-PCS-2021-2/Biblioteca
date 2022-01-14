@@ -2,10 +2,10 @@
 
 {% block main %}
 
-    <h2 class="text-center"> Cadastro efetuado com sucesso! </h2>
+    <h2 class="text-center"> Remoção da obra {{titulo}} feito com sucesso! </h2>
 
     <div class="buttonHolder">
-        <form action="{{ url_for('index') }}">
+        <form action="{{ url_for('func_check_dashboard') }}">
            <input type="submit" value="Retornar ao início" />
        </form>
        

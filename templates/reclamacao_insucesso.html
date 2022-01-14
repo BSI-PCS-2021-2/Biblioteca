@@ -4,4 +4,11 @@
 
     <h2 class="text-center"> Erro! Login inválido ou algum campo está vazio! </h2>
 
+    <div class="buttonHolder">
+        <form action="{{ url_for('cliente_dashboard') }}">
+           <input type="submit" value="Retornar ao dashboard" />
+       </form>
+       
+  </div>
+
 {% endblock %}

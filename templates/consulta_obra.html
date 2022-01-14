@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title%}  - Consulta de obras  {% endblock %}
+
+{% block main %}
+         <form action="{{ url_for('consulta_obra') }}" method="POST" class="text-center">
+            <label>Digite a posição física da obra</label>
+            <input type="text" name="posicao" /> <br>
+        
+            <div class="form__fieldset">
+               <input
+                 class="form__submit form__input"
+                 type="submit"
+                 value="Consultar"
+               />
+             </div>
+         </form>
+         {% endblock %}

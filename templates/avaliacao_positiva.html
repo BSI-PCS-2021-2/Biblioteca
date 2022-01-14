@@ -2,7 +2,7 @@
 
 {% block main %}
 
-    <h2 class="text-center"> Obrigado pelo feedback! </h2>
+    <h2 class="text-center"> A obra {{session["emprestimo"][0]}} foi avaliada positivamente! </h2>
 
     <div class="buttonHolder">
         <form action="{{ url_for('cliente_dashboard') }}">

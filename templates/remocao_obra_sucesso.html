@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block title%}  - Remoção de obras  {% endblock %}
+
+{% block main %}
+         <table>
+             <tr>
+                 <th>Título</th>
+                 <th>Autor</th>
+                 <th>Assunto</th>
+                 <th>Data de Publicação</th>
+                 <th>Posição</th>
+             </tr>
+             <tr>
+                <td>{{titulo}}</td>
+                <td>{{autor}}</td>
+                <td>{{assunto}}</td>
+                <td>{{data}}</td>
+                <td>{{posicao}}</td>
+            </tr>
+         </table>
+         <hr>
+         <form action="{{ url_for('confirmar_remocao_obra', ) }}" method="POST" class="text-center">
+            <label>Digite o nome da obra para confirmar a remoção</label>
+            <input type="text" name="obraName" /> <br>
+        
+            <div class="form__fieldset">
+               <input
+                 class="form__submit form__input"
+                 type="submit"
+                 value="Remover"
+               />
+             </div>
+         </form>
+         {% endblock %}
