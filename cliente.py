@@ -1,12 +1,12 @@
 import sqlite3
 
-from flask_login import UserMixin 
+#from flask_login import UserMixin 
 
 from hashlib import md5
 
 from db import *
 
-class Cliente(UserMixin):
+class Cliente():
     def __init__(self, name=None, email=None, login=None, password=None):
         #self.id = id_
         self.name = name

@@ -1,12 +1,12 @@
 import sqlite3
 
-from flask_login import UserMixin 
+#from flask_login import UserMixin 
 
 from hashlib import md5
 
 from db import *
 
-class Funcionario(UserMixin):
+class Funcionario():
     def __init__(self, name=None, email=None, matricula=None, password=None):
         #self.id = id_
         self.name = name
