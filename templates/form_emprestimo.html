@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block title%}  - Empréstimo de obras  {% endblock %}
+
+{% block main %}
+         <form action="{{ url_for('emprestimo') }}" method="POST" class="text-center">
+            <label>Nome</label>
+            <input type="text" name="obraName" /> <br>
+            <label>Autor</label>
+            <input type="text" name="authorName" /> <br>
+            <label>Assunto</label>
+            <input type="text" name="assunto"/> <br>
+            <label>Data de Publicação</label> 
+            <input type="date" name="date"/>
+            <label>Posição</label> 
+            <input type="text" name="posicao"/>
+            <div class="form__fieldset">
+               <input
+                 class="form__submit form__input"
+                 type="submit"
+                 value="Consultar"
+               />
+             </div>
+         </form>
+         {% endblock %}
