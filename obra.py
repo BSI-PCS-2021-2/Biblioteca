@@ -1,5 +1,5 @@
 import sqlite3
-import datetime
+from datetime import datetime, timedelta
 
 from db import *
 
@@ -66,23 +66,23 @@ class Obra():
         if obra is None:
             return None
 
-        sql = "SELECT * FROM emprestimo WHERE cliente_id = {} AND obra_id = {} AND devolvido = FALSE".format(cliente_id, obra[5])
+        sql = "SELECT * FROM emprestimo WHERE obra_id = {} AND devolvido = FALSE".format(obra[5])
         
         results = cursor.execute(sql).fetchall()
         print(results)
         if not results:
-            today = datetime.datetime.now()
-            return_date = datetime.timedelta(days=14)
+            today = datetime.today()
+            return_date = timedelta(days=14)
             return_date = today + return_date
             print(today, return_date)
             sql = """
                 INSERT INTO emprestimo (cliente_id, obra_id, data_emprestimo, data_devolucao) VALUES ({}, {}, '{}', '{}')
-            """.format(cliente_id, obra.obra_id, today, return_date)
+            """.format(cliente_id, obra[5], today, return_date)
     
             cursor.execute(sql)
             conn.commit()
-            print(obra.titulo, today, return_date)
-            return obra.titulo, today, return_date
+            print(obra[5], today, return_date)
+            return obra[5], today, return_date
 
         return None
 
