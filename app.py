@@ -232,7 +232,7 @@ def tela_avaliacao():
 def tela_emprestimo():
     global session_cliente
     if session_cliente:
-        return render_template("form_emprestimo.html")
+        return render_template("emprestimo.html")
     else:
         return redirect( url_for("index") )
 
