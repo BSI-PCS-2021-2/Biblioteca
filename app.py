@@ -244,15 +244,19 @@ def emprestimo():
         return "Cadastro necessário"
 
     if request.method == "POST":
+        # consultar se livro não foi emprestado
+
         if request.form["obraName"] is None and request.form["authorName"] is None and request.form["assunto"] is None and request.form["posicao"] is None:
-            return render_template("consulta_obra_insucesso.html")
+            return render_template("emprestimo_consulta_insucesso.html")
         
         else:
             if request.form["posicao"]: 
                 obra = Obra(posicao=request.form["posicao"])
                 obra = obra.get()
-                
-                return render_template(obra=obra)
+                print(obra.titulo)
+                titulo, data_emprestimo, data_devolucao = obra.emprestar(cliente_id=session["cliente_id"])
+                return render_template("emprestimo_consulta_sucesso.html", obra=obra, data_emprestimo=data_emprestimo, data_devolucao=data_devolucao)
+            return render_template("emprestimo_consulta_insucesso.html")
 
 @app.route("/cliente/avaliar-positivo")
 def avaliar_positivo():

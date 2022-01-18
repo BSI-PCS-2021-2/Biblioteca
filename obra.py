@@ -1,4 +1,5 @@
 import sqlite3
+import datetime
 
 from db import *
 
@@ -61,27 +62,29 @@ class Obra():
         conn, cursor = connect_db()
 
         obra = self.get_data()
-
+        print(obra)
         if obra is None:
             return None
 
-        sql = "SELECT * FROM emprestimo WHERE cliente_id = {} AND obra_id = {} AND devolvido = FALSE".format(cliente_id, obra.obra_id)
+        sql = "SELECT * FROM emprestimo WHERE cliente_id = {} AND obra_id = {} AND devolvido = FALSE".format(cliente_id, obra[5])
         
         results = cursor.execute(sql).fetchall()
-        if results is None:
+        print(results)
+        if not results:
+            today = datetime.datetime.now()
+            return_date = datetime.timedelta(days=14)
+            return_date = today + return_date
+            print(today, return_date)
             sql = """
-                INSERT INTO emprestimo (cliente_id, obra_id) VALUES {}, {}
-            """.format(cliente_id, obra.obra_id)
-
+                INSERT INTO emprestimo (cliente_id, obra_id, data_emprestimo, data_devolucao) VALUES ({}, {}, '{}', '{}')
+            """.format(cliente_id, obra.obra_id, today, return_date)
+    
             cursor.execute(sql)
             conn.commit()
-            
+            print(obra.titulo, today, return_date)
+            return obra.titulo, today, return_date
 
-            sql = "SELECT * FROM emprestimo WHERE cliente_id = {} AND obra_id = {} AND devolvido = FALSE".format(cliente_id, obra.obra_id)
-
-            results = cursor.execute(sql).fetchone()
-
-            return obra.titulo, 
+        return None
 
     def delete(self):
         conn, cursor = connect_db()
