@@ -256,7 +256,10 @@ def emprestimo():
                 print(obra.titulo)
                 titulo, data_emprestimo, data_devolucao = obra.emprestar(cliente_id=session["cliente_id"])
                 return render_template("emprestimo_consulta_sucesso.html", obra=obra, data_emprestimo=data_emprestimo, data_devolucao=data_devolucao)
+
+            
             return render_template("emprestimo_consulta_insucesso.html")
+
 
 @app.route("/cliente/avaliar-positivo")
 def avaliar_positivo():
