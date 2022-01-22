@@ -1,5 +1,4 @@
 from flask import Flask, redirect, url_for, render_template, request, flash, session
-import pandas as pd
 import sqlite3
 from hashlib import md5
 import json
@@ -229,6 +228,39 @@ def tela_avaliacao():
     else:
         return redirect( url_for("index") )
 
+@app.route("/cliente/check-emprestimo")
+def tela_emprestimo():
+    global session_cliente
+    if session_cliente:
+        return render_template("emprestimo.html")
+    else:
+        return redirect( url_for("index") )
+
+@app.route("/cliente/emprestimo", methods=["GET", "POST"])
+def emprestimo():
+    conn, cursor = connect_db()
+
+    if request.method == "GET":
+        return "Cadastro necessário"
+
+    if request.method == "POST":
+        # consultar se livro não foi emprestado
+
+        if request.form["obraName"] is None and request.form["authorName"] is None and request.form["assunto"] is None and request.form["posicao"] is None:
+            return render_template("emprestimo_consulta_insucesso.html")
+        
+        else:
+            if request.form["posicao"]: 
+                obra = Obra(posicao=request.form["posicao"])
+                obra = obra.get()
+                print(obra.titulo)
+                titulo, data_emprestimo, data_devolucao = obra.emprestar(cliente_id=session["cliente_id"])
+                return render_template("emprestimo_consulta_sucesso.html", obra=obra, data_emprestimo=data_emprestimo, data_devolucao=data_devolucao)
+
+            
+            return render_template("emprestimo_consulta_insucesso.html")
+
+
 @app.route("/cliente/avaliar-positivo")
 def avaliar_positivo():
     conn, cursor = connect_db()
@@ -280,12 +312,7 @@ def form_cadastro_funcionario():
             funcionario = Funcionario(email=request.form["userEmail"], matricula=request.form["userMatricula"], password=password)
             funcionario.insert_into_db()
             print(funcionario.get())
-            #sql = """
-            #    INSERT INTO user (email, login, senha) VALUES ('{email}', '{login}', '{senha}')
-            #""".format(email=email, login=login, senha=password)
-            #cursor.execute(sql)
-            #conn.commit()
-            #conn.close()
+            
             return render_template("cadastro_funcionario_sucesso.html")
 
 @app.route("/form_funcionario")
