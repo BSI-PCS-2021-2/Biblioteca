@@ -134,10 +134,64 @@ def avaliar_emprestimo(emprestimo_id, avaliacao):
         cursor.execute(sql)
         conn.commit()
         conn.close()
+
+def get_autores():
+    conn, curr = connect_db()
+
+    sql = "SELECT DISTINCT nome_autor FROM obra"
+
+    nome_autores = curr.execute(sql).fetchall()
+
+    return nome_autores
+
+def get_generos():
+    conn, curr = connect_db()
+
+    sql = "SELECT DISTINCT assunto FROM obra"
+
+    generos = curr.execute(sql).fetchall()
+
+    return generos
     
+def get_by_ag(nome_autor, genero):
+    conn, cur = connect_db()
     
-create_db()
-print(get_emprestimo(1))
+    sql = """SELECT titulo, nome_autor, assunto, posicao, devolvido 
+    FROM obra LEFT JOIN emprestimo ON obra.id = obra_id WHERE nome_autor = '{}' AND assunto = '{}'
+    """.format(nome_autor, genero)
+    print(sql)
+    results = cur.execute(sql).fetchall()
+
+    return results
+
+def get_by_author(nome_autor):
+    conn, cur = connect_db()
+    
+    sql = """SELECT titulo, nome_autor, assunto, posicao, devolvido 
+    FROM obra LEFT JOIN emprestimo ON obra.id = obra_id WHERE nome_autor = '{}'
+    """.format(nome_autor)
+    print(sql)
+    results = cur.execute(sql).fetchall()
+
+    return results
+
+def get_by_genero(genero):
+    conn, cur = connect_db()
+    
+    sql = """SELECT titulo, nome_autor, assunto, posicao, devolvido 
+    FROM obra LEFT JOIN emprestimo ON obra.id = obra_id WHERE assunto = '{}'
+    """.format(genero)
+    print(sql)
+    results = cur.execute(sql).fetchall()
+
+    return results
+
+#create_db()
+print(get_generos(), get_autores())
+print(get_by_ag(nome_autor="Tiago N", genero="Romance"))
+print(get_by_author(nome_autor="Tiago N"))
+print(get_by_genero(genero="História"))
+#print(get_emprestimo(1))
 #o = Obra(titulo="Teste 1", autor="Nery Pedro", assunto="Terror", data_publicacao="2019-02-01", posicao="A2")
 #o.insert_into_db()
 #print(o.get())
