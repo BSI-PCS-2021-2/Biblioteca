@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+{% block title%}  - Obras para dar baixa  {% endblock %}
+
+{% block main %}
+         <table>
+             <tr>
+                 <th>Título</th>
+                 <th>Data do empréstimo</th>
+                 <th>Data de devolução</th>
+                 <th>Posição</th>
+                
+             </tr>
+             {% for obra in obras %}
+             <tr>
+                <td>{{ obra[0] }}</td>
+                <td>{{ obra[1] }}</td>
+                <td>{{ obra[2] }}</td>
+                <td>{{ obra[3] }}</td>
+                
+            </tr>
+            {% endfor %}
+         </table>
+         <br><br>
+
+         <form action="{{ url_for('dar_baixa') }}" method="POST" class="text-center">
+            <label>Digite a posição física da obra</label>
+            <input type="text" name="posicao" /> <br>
+        
+            <div class="form__fieldset">
+               <input
+                 class="form__submit form__input"
+                 type="submit"
+                 value="Disponibilizar obra"
+               />
+             </div>
+         </form>
+         {% endblock %}

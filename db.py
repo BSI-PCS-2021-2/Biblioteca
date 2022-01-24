@@ -35,8 +35,8 @@ def create_db():
     cur.execute(sql)
 
     sql = """
-        INSERT INTO obra (titulo, nome_autor, assunto, data_publicacao, posicao) 
-        VALUES ('Obra de Teste', 'Tiago Nunes', 'História', '2020-01-01', 'A1')
+        INSERT INTO obra (titulo, nome_autor, assunto, data_publicacao, posicao, baixa) 
+        VALUES ('Obra de Teste', 'Tiago Nunes', 'História', '2020-01-01', 'A1', False)
     """
 
     cur.execute(sql)
