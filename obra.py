@@ -237,7 +237,25 @@ def dar_baixa_obra(obra_posicao):
     
     print(cur.execute(sql).fetchone())
 
-#create_db()
+def get_emprestimo_atraso():
+    conn, cur = connect_db()
+
+    sql = """
+    SELECT cliente.name, cliente.email, obra.titulo, DATE(emprestimo.data_emprestimo), DATE(emprestimo.data_devolucao) 
+    FROM emprestimo INNER JOIN obra ON emprestimo.obra_id = obra.id
+    INNER JOIN cliente ON cliente.id = emprestimo.cliente_id 
+    WHERE emprestimo.data_devolucao < date('now')
+    """
+
+    results = cur.execute(sql).fetchall()
+
+    print(results)
+
+    return results
+
+
+create_db()
+print(get_emprestimo_atraso())
 #print(get_generos(), get_autores())
 #print(get_by_ag(nome_autor="Tiago N", genero="Romance"))
 #print(get_by_author(nome_autor="Tiago N"))

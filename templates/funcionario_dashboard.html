@@ -11,9 +11,12 @@
      <form action="{{ url_for('tela_reclamacao') }}">
       <input type="submit" value="Responder reclamação" />
   </form>
+  <form action="{{ url_for('tela_cobranca') }}">
+    <input type="submit" value="Cobrar atrasos" />
+</form>
    </div>
    <br>
-   <br>
+   
    <div class="buttonHolder">
     <form action="{{ url_for('logout') }}">
        <input type="submit" value="Deslogar" />

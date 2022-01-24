@@ -4,20 +4,21 @@
 
 <h2>Seja bem vindo, {{login}}!</h2>
          <div class="buttonHolder">
-         <form action="{{ url_for('tela_avaliacao') }}">
+         <!--<form action="{{ url_for('tela_avaliacao') }}">
             <input type="submit" value="Avaliar obra" />
         </form>
-        <!--<form action="{{ url_for('cadastro_cliente') }}">
+        <form action="{{ url_for('cadastro_cliente') }}">
          <input type="submit" value="Cadastrar" /> 
      </form>-->
-     <form action="{{ url_for('reclamacao') }}">
-      <input type="submit" value="Reclamar" />
-  </form>
+     
   <form action="{{ url_for('tela_consulta') }}">
     <input type="submit" value="Empréstimo" />
 </form>
 <form action="{{ url_for('tela_emprestimos') }}">
     <input type="submit" value="Consultar empréstimos" />
+</form>
+<form action="{{ url_for('reclamacao') }}">
+    <input type="submit" value="Reclamar" />
 </form>
    </div>
    <div class="buttonHolder">

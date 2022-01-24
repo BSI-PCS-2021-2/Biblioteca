@@ -98,13 +98,13 @@ def login_google():
     # scopes that let you retrieve user's profile from Google
     request_uri = client.prepare_request_uri(
         authorization_endpoint,
-        redirect_uri=request.base_url + "/login-g",
+        redirect_uri=request.base_url + "/callback",
         scope=["openid", "email", "profile"],
     )
     return redirect(request_uri)
 
-@app.route("/login-g")
-def login_g():
+@app.route("/login-google/callback")
+def callback():
     # Get authorization code Google sent back to you
     code = request.args.get("code")
 
@@ -147,7 +147,11 @@ def login_g():
     else:
         return "User email not available or not verified by Google.", 400
 
-    return render_template('login_sucesso.html')
+    session["user_login"] = users_name
+    global session_cliente
+    session_cliente = True
+
+    return render_template('cliente_dashboard.html', login=session["user_login"])
 
 @app.route("/cadastro")
 def cadastro_cliente():
@@ -581,6 +585,14 @@ def responder_reclamacao():
             update_reclamacao(session["reclamacao"][0])
             return render_template("resposta_acerto.html")
 
+@app.route("/funcionario/check-cobranca-devolucao")
+def tela_cobranca():
+    if session_funcionario:
+        atrasos = get_emprestimo_atraso()
+        return render_template("cobranca_atraso.html", atrasos=atrasos)
+
+    return redirect( url_for("index") )
+
 @app.route("/logout")
 def logout():
     global session_cliente
@@ -597,4 +609,4 @@ def logout():
 
 if __name__ == "__main__":
     create_db()
-    app.run()
+    app.run(ssl_context="adhoc")

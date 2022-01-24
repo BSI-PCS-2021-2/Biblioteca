@@ -58,7 +58,7 @@ def create_db():
     sql = """
         INSERT INTO emprestimo (cliente_id, obra_id, data_emprestimo, data_devolucao) 
         VALUES (1, 1, '{}', '{}')
-    """.format(datetime.now() + timedelta(days=-14), datetime.now())
+    """.format(datetime.now() + timedelta(days=-15), datetime.now() + timedelta(days=-1))
 
     cur.execute(sql)
 

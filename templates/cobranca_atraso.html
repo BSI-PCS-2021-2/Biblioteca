@@ -1,22 +1,24 @@
 {% extends "layout.html" %}
 
-{% block title%}  - Empréstimos do cliente  {% endblock %}
+{% block title%}  - Empréstimos em atraso  {% endblock %}
 
 {% block main %}
          <table>
              <tr>
+                 <th>Nome do cliente</th>
+                 <th>Email</th>
                  <th>Título</th>
                  <th>Data do empréstimo</th>
                  <th>Data de devolução</th>
-                 <th>Posição</th>
                 
              </tr>
-             {% for emprestimo in emprestimos %}
+             {% for atraso in atrasos %}
              <tr>
-                <td>{{ emprestimo[0] }}</td>
-                <td>{{ emprestimo[1] }}</td>
-                <td>{{ emprestimo[2] }}</td>
-                <td>{{ emprestimo[3] }}</td>
+                <td>{{ atraso[0] }}</td>
+                <td>{{ atraso[1] }}</td>
+                <td>{{ atraso[2] }}</td>
+                <td>{{ atraso[3] }}</td>
+                <td>{{ atraso[4] }}</td>
                 
             </tr>
             {% endfor %}
