@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block main %}
+
+    <h2 class="text-center"> A obra {{obra.titulo}} foi devolvida!    </h2>
+
+    <div class="buttonHolder">
+        <form action="{{ url_for('cliente_dashboard') }}">
+           <input type="submit" value="Retornar ao dashboard" />
+       </form>
+       <form action="{{ url_for('avaliar_positivo') }}">
+        <input type="submit" value="Gostei da obra" />
+    </form>
+    <!--<form action="{{ url_for('cadastro_cliente') }}">
+     <input type="submit" value="Cadastrar" /> 
+ </form>-->
+ <form action="{{ url_for('avaliar_negativo') }}">
+  <input type="submit" value="Não gostei da obra" />
+</form>
+  </div>
+
+{% endblock %}

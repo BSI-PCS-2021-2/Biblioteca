@@ -78,6 +78,10 @@ class Obra():
             sql = """
                 INSERT INTO emprestimo (cliente_id, obra_id, data_emprestimo, data_devolucao) VALUES ({}, {}, '{}', '{}')
             """.format(cliente_id, obra[5], today, return_date)
+
+            cursor.execute(sql)
+
+            sql = "UPDATE obra SET baixa = False WHERE id = {}".format(obra[5])
     
             cursor.execute(sql)
             conn.commit()
@@ -85,6 +89,21 @@ class Obra():
             return obra[5], today, return_date
 
         return None
+
+    def devolver(self, cliente_id):
+        conn, cursor = connect_db()
+        
+        sql = "UPDATE EMPRESTIMO SET devolvido = True WHERE obra_id = {} AND cliente_id = {} AND devolvido = False".format(self.obra_id, cliente_id)
+        cursor.execute(sql)
+
+        sql = "UPDATE obra SET baixa = False WHERE id = {}".format(self.obra_id)
+    
+        cursor.execute(sql)
+        conn.commit()
+
+        sql = "SELECT * FROM emprestimo WHERE devolvido = False"
+        print(cursor.execute(sql).fetchall())
+
 
     def delete(self):
         conn, cursor = connect_db()
@@ -101,16 +120,30 @@ class Obra():
         conn.commit()
         conn.close()
 
-def get_emprestimo(client_id):
+def get_emprestimo(cliente_id, obra_posicao):
     conn, cursor = connect_db()
 
     sql = """
         SELECT titulo, DATE(data_emprestimo), DATE(data_devolucao), emprestimo.id
         FROM emprestimo INNER JOIN obra ON obra_id = obra.id 
-         WHERE cliente_id = {} ORDER BY data_emprestimo ASC LIMIT 1
-    """.format(client_id)
-
+         WHERE cliente_id = {} AND posicao = '{}' ORDER BY data_emprestimo ASC LIMIT 1
+    """.format(cliente_id, obra_posicao)
+    #print(sql)
     results = cursor.execute(sql).fetchone()
+
+    return results
+
+def get_emprestimos(cliente_id):
+    conn, cursor = connect_db()
+
+    sql = """
+    SELECT titulo, DATE(data_emprestimo), DATE(data_devolucao), posicao
+    FROM emprestimo INNER JOIN obra ON obra_id = obra.id 
+        WHERE cliente_id = {} AND devolvido = False ORDER BY data_emprestimo ASC LIMIT 3
+    """.format(cliente_id)
+    #print(sql)
+
+    results = cursor.execute(sql).fetchall()
 
     return results
 
@@ -134,10 +167,100 @@ def avaliar_emprestimo(emprestimo_id, avaliacao):
         cursor.execute(sql)
         conn.commit()
         conn.close()
+
+def get_autores():
+    conn, curr = connect_db()
+
+    sql = "SELECT DISTINCT nome_autor FROM obra"
+
+    nome_autores = curr.execute(sql).fetchall()
+
+    return nome_autores
+
+def get_generos():
+    conn, curr = connect_db()
+
+    sql = "SELECT DISTINCT assunto FROM obra"
+
+    generos = curr.execute(sql).fetchall()
+
+    return generos
     
+def get_by_ag(nome_autor, genero):
+    conn, cur = connect_db()
     
+    sql = """SELECT titulo, nome_autor, assunto, posicao, devolvido 
+    FROM obra LEFT JOIN emprestimo ON obra.id = obra_id WHERE nome_autor = '{}' AND assunto = '{}'
+    """.format(nome_autor, genero)
+    #print(sql)
+    results = cur.execute(sql).fetchall()
+
+    return results
+
+def get_by_author(nome_autor):
+    conn, cur = connect_db()
+    
+    sql = """SELECT titulo, nome_autor, assunto, posicao, devolvido 
+    FROM obra LEFT JOIN emprestimo ON obra.id = obra_id WHERE nome_autor = '{}' AND baixa = 1
+    """.format(nome_autor)
+    #print(sql)
+    results = cur.execute(sql).fetchall()
+
+    return results
+
+def get_by_genero(genero):
+    conn, cur = connect_db()
+    
+    sql = """SELECT titulo, nome_autor, assunto, posicao, devolvido 
+    FROM obra LEFT JOIN emprestimo ON obra.id = obra_id WHERE assunto = '{}' AND baixa = 1
+    """.format(genero)
+    #print(sql)
+    results = cur.execute(sql).fetchall()
+
+    return results
+
+def get_obra_sem_baixa():
+    conn, cur = connect_db()
+
+    sql = "SELECT titulo, nome_autor, assunto, posicao FROM obra WHERE baixa = 0"
+    results = cur.execute(sql).fetchall()
+
+    return results
+
+def dar_baixa_obra(obra_posicao):
+    conn, cur = connect_db()
+
+    sql = "UPDATE obra SET baixa = True WHERE posicao = '{}'".format(obra_posicao)
+    cur.execute(sql)
+    conn.commit()
+    sql = "SELECT * FROM obra WHERE posicao = '{}'".format(obra_posicao)
+    
+    print(cur.execute(sql).fetchone())
+
+def get_emprestimo_atraso():
+    conn, cur = connect_db()
+
+    sql = """
+    SELECT cliente.name, cliente.email, obra.titulo, DATE(emprestimo.data_emprestimo), DATE(emprestimo.data_devolucao) 
+    FROM emprestimo INNER JOIN obra ON emprestimo.obra_id = obra.id
+    INNER JOIN cliente ON cliente.id = emprestimo.cliente_id 
+    WHERE emprestimo.data_devolucao < date('now')
+    """
+
+    results = cur.execute(sql).fetchall()
+
+    print(results)
+
+    return results
+
+
 create_db()
-print(get_emprestimo(1))
+print(get_emprestimo_atraso())
+#print(get_generos(), get_autores())
+#print(get_by_ag(nome_autor="Tiago N", genero="Romance"))
+#print(get_by_author(nome_autor="Tiago N"))
+#print(get_by_genero(genero="História"))
+#print(get_emprestimos(1))
 #o = Obra(titulo="Teste 1", autor="Nery Pedro", assunto="Terror", data_publicacao="2019-02-01", posicao="A2")
 #o.insert_into_db()
 #print(o.get())

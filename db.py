@@ -35,8 +35,8 @@ def create_db():
     cur.execute(sql)
 
     sql = """
-        INSERT INTO obra (titulo, nome_autor, assunto, data_publicacao, posicao) 
-        VALUES ('Obra de Teste', 'Tiago Nunes', 'História', '2020-01-01', 'A1')
+        INSERT INTO obra (titulo, nome_autor, assunto, data_publicacao, posicao, baixa) 
+        VALUES ('Obra de Teste', 'Tiago Nunes', 'História', '2020-01-01', 'A1', False)
     """
 
     cur.execute(sql)
@@ -58,7 +58,7 @@ def create_db():
     sql = """
         INSERT INTO emprestimo (cliente_id, obra_id, data_emprestimo, data_devolucao) 
         VALUES (1, 1, '{}', '{}')
-    """.format(datetime.now() + timedelta(days=-14), datetime.now())
+    """.format(datetime.now() + timedelta(days=-15), datetime.now() + timedelta(days=-1))
 
     cur.execute(sql)
 

@@ -30,6 +30,15 @@ class Cliente():
         #self.session = True
         return cliente
 
+    def get_id(self):
+        conn, cursor = connect_db()
+
+        sql = "SELECT id FROM cliente WHERE login = '{}'".format(self.login)
+
+        _id = cursor.execute(sql).fetchone()
+
+        return _id[0]
+
     def get_data(self):
         conn, cursor = connect_db()
 
@@ -80,6 +89,8 @@ class Cliente():
                 return True
 
         return False
+
+
 
 #create_db()
 #password = md5("12345".encode())

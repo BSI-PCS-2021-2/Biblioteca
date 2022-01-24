@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block title%}  - Consulta de obras  {% endblock %}
+
+{% block main %}
+         <table>
+             <tr>
+                 <th>Título</th>
+                 <th>Autor</th>
+                 <th>Assunto</th>
+                 <th>Posição</th>
+                 <th>Emprestado?</th>
+             </tr>
+             {% for result in results %}
+             <tr>
+                <td>{{ result[0] }}</td>
+                <td>{{ result[1] }}</td>
+                <td>{{ result[2] }}</td>
+                <td>{{ result[3] }}</td>
+                {% if result[4] == 1 or result[4] is none %}
+                <td>Não</td>
+                {% else %}
+                <td>Sim</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+         </table>
+         <br><br>
+
+         <form action="{{ url_for('emprestimo') }}" method="POST" class="text-center">
+            <label>Digite a posição física da obra</label>
+            <input type="text" name="posicao" /> <br>
+        
+            <div class="form__fieldset">
+               <input
+                 class="form__submit form__input"
+                 type="submit"
+                 value="Fazer empréstimo"
+               />
+             </div>
+         </form>
+         {% endblock %}

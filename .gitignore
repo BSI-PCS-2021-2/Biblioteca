@@ -8,4 +8,5 @@ funcionario_db.csv
 Scripts
 Lib
 pyvenv.cfg
-biblioteca.db
+.env
+biblioteca-pcs

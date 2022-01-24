@@ -3,6 +3,7 @@ import sqlite3
 from hashlib import md5
 import json
 import os
+from dotenv import load_dotenv
 
 # Import das classes criadas para o projeto
 from cliente import Cliente
@@ -19,9 +20,11 @@ session_funcionario = False
 
 from db import *
 
+load_dotenv()
+
 # Nao é a melhor maneira de tratar secret keys
-GOOGLE_CLIENT_ID = "100201225639-6v55q25o4lrjl889uievo0fqgrnpid0j.apps.googleusercontent.com"
-GOOGLE_CLIENT_SECRET = "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"
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 GOOGLE_DISCOVERY_URL = (
     "https://accounts.google.com/.well-known/openid-configuration"
 )
@@ -95,13 +98,13 @@ def login_google():
     # scopes that let you retrieve user's profile from Google
     request_uri = client.prepare_request_uri(
         authorization_endpoint,
-        redirect_uri=request.base_url + "/login-g",
+        redirect_uri=request.base_url + "/callback",
         scope=["openid", "email", "profile"],
     )
     return redirect(request_uri)
 
-@app.route("/login-g")
-def login_g():
+@app.route("/login-google/callback")
+def callback():
     # Get authorization code Google sent back to you
     code = request.args.get("code")
 
@@ -144,7 +147,11 @@ def login_g():
     else:
         return "User email not available or not verified by Google.", 400
 
-    return render_template('login_sucesso.html')
+    session["user_login"] = users_name
+    global session_cliente
+    session_cliente = True
+
+    return render_template('cliente_dashboard.html', login=session["user_login"])
 
 @app.route("/cadastro")
 def cadastro_cliente():
@@ -180,12 +187,7 @@ def form_cadastro():
             cliente = Cliente(name=request.form["userName"], email=request.form["userEmail"], login=request.form["userLogin"], password=password)
             cliente.insert_into_db()
             print(cliente.get())
-            #sql = """
-            #    INSERT INTO user (email, login, senha) VALUES ('{email}', '{login}', '{senha}')
-            #""".format(email=email, login=login, senha=password)
-            #cursor.execute(sql)
-            #conn.commit()
-            #conn.close()
+            
             return render_template("cadastro_cliente_sucesso.html")
 
 
@@ -217,27 +219,19 @@ def form_reclamacao():
                 )
             reclamacao.insert_into_db()
             return render_template("obrigado.html")
-    
-@app.route("/cliente/check-avaliar")
-def tela_avaliacao():
+
+@app.route("/cliente/check-consulta")
+def tela_consulta():
     global session_cliente
     if session_cliente:
-        session["emprestimo"] = get_emprestimo(session["cliente_id"]) 
-        emprestimo = get_emprestimo(session["cliente_id"])
-        return render_template("avaliar_obra.html", emprestimo=emprestimo)
+        autores = get_autores()
+        generos = get_generos()
+        return render_template("consulta_emprestimo.html", autores=autores, generos=generos)
     else:
         return redirect( url_for("index") )
 
-@app.route("/cliente/check-emprestimo")
-def tela_emprestimo():
-    global session_cliente
-    if session_cliente:
-        return render_template("emprestimo.html")
-    else:
-        return redirect( url_for("index") )
-
-@app.route("/cliente/emprestimo", methods=["GET", "POST"])
-def emprestimo():
+@app.route("/cliente/consulta", methods=["GET", "POST"])
+def consulta_emprestimo():
     conn, cursor = connect_db()
 
     if request.method == "GET":
@@ -246,25 +240,90 @@ def emprestimo():
     if request.method == "POST":
         # consultar se livro não foi emprestado
 
-        if request.form["obraName"] is None and request.form["authorName"] is None and request.form["assunto"] is None and request.form["posicao"] is None:
+        if request.form["authorName"] == '' and request.form["assunto"] == '':
             return render_template("emprestimo_consulta_insucesso.html")
         
         else:
-            if request.form["posicao"]: 
-                obra = Obra(posicao=request.form["posicao"])
-                obra = obra.get()
-                print(obra.titulo)
-                titulo, data_emprestimo, data_devolucao = obra.emprestar(cliente_id=session["cliente_id"])
-                return render_template("emprestimo_consulta_sucesso.html", obra=obra, data_emprestimo=data_emprestimo, data_devolucao=data_devolucao)
-
+            if request.form["assunto"] != '' and request.form["authorName"] != '':
+                print("t1")
+                results = get_by_ag(nome_autor=request.form["authorName"], genero=request.form["assunto"])
+                print(results)
+                return render_template("consulta_sucesso.html", results=results)
             
+            if request.form["assunto"] != '':
+                print("t2")
+                results = get_by_genero(genero=request.form["assunto"])
+                print(results)
+                return render_template("consulta_sucesso.html", results=results)
+
+            if request.form["authorName"] != '':
+                print("t3")
+                results = get_by_author(nome_autor=request.form["authorName"])
+                print(results)
+                return render_template("consulta_sucesso.html", results=results)
+
+            #if request.form["posicao"]: 
+            #    obra = Obra(posicao=request.form["posicao"])
+            #    obra = obra.get()
+            #    print(obra.titulo)
+            #    titulo, data_emprestimo, data_devolucao = obra.emprestar(cliente_id=session["cliente_id"])
+            #    return render_template("emprestimo_sucesso.html", obra=obra, data_emprestimo=data_emprestimo, data_devolucao=data_devolucao)
+
             return render_template("emprestimo_consulta_insucesso.html")
 
+@app.route("/cliente/emprestimo", methods=["GET", "POST"])
+def emprestimo():
+    conn, curr = connect_db()
+
+    if request.method == "POST":
+        # consultar se livro não foi emprestado
+        if request.form["posicao"] != '': 
+            obra = Obra(posicao=request.form["posicao"])
+            
+            obra = obra.get()
+            print(obra.titulo)
+            titulo, data_emprestimo, data_devolucao = obra.emprestar(cliente_id=session["cliente_id"])
+            return render_template("emprestimo_sucesso.html", obra=obra, data_emprestimo=data_emprestimo, data_devolucao=data_devolucao)
+
+@app.route("/cliente/check-obras-emprestadas")
+def tela_emprestimos():
+    if session_cliente:
+        
+        emprestimos = get_emprestimos(session["cliente_id"])
+        print(emprestimos)
+        return render_template("obras_emprestadas.html", emprestimos=emprestimos)
+    return render_template( url_for("index") )
+
+
+@app.route("/cliente/devolver-obra", methods=["GET", "POST"])
+def devolver_obra():
+    conn, curr = connect_db()
+
+    if request.method == "POST":
+        # consultar se livro não foi emprestado
+        if request.form["posicao"]: 
+            session["obra_posicao"] = request.form["posicao"]
+            obra = Obra(posicao=request.form["posicao"])
+            obra = obra.get()
+            print(obra.titulo)
+            obra.devolver(cliente_id=session["cliente_id"])
+            return render_template("devolucao_sucesso.html", obra=obra)
+
+@app.route("/cliente/check-avaliar")
+def tela_avaliacao():
+    global session_cliente
+    if session_cliente:
+        session["emprestimo"] = get_emprestimo(session["cliente_id"], session["obra_posicao"]) 
+        #emprestimo = get_emprestimo(session["cliente_id"])
+        print(session["emprestimo"])
+        return render_template("avaliar_obra.html", emprestimo=session["emprestimo"])
+    else:
+        return redirect( url_for("index") )
 
 @app.route("/cliente/avaliar-positivo")
 def avaliar_positivo():
     conn, cursor = connect_db()
-
+    session["emprestimo"] = get_emprestimo(session["cliente_id"], session["obra_posicao"])
     avaliar_emprestimo(emprestimo_id=session["emprestimo"][3], avaliacao=2)
 
     return render_template("avaliacao_positiva.html")
@@ -272,7 +331,7 @@ def avaliar_positivo():
 @app.route("/cliente/avaliar-negativo")
 def avaliar_negativo():
     conn, cursor = connect_db()
-
+    session["emprestimo"] = get_emprestimo(session["cliente_id"], session["obra_posicao"])
     avaliar_emprestimo(emprestimo_id=session["emprestimo"][3], avaliacao=1)
 
     return render_template("avaliacao_negativa.html")
@@ -420,11 +479,34 @@ def consulta_obra():
         obra = Obra(posicao=request.form["posicao"])
 
         if obra.get():
-            titulo, autor, assunto, data, posicao = obra.get_data()
+            titulo, autor, assunto, data, posicao, id = obra.get_data()
             return render_template("consulta_obra_sucesso.html", titulo=titulo, autor=autor, assunto=assunto, data=data, posicao=posicao)
 
         else:
             return render_template("consulta_obra_insucesso.html", posicao=request.form["posicao"])
+
+@app.route("/funcionario/obra/check-baixa")
+def tela_baixa_obra():
+    if session_funcionario:
+        obras = get_obra_sem_baixa()
+        print(obras)
+        return render_template("baixa_obra.html", obras=obras)
+    else:
+        return redirect( url_for("index") )
+
+@app.route("/funcionario/obra/check-baixa", methods=["GET", "POST"])
+def dar_baixa():
+    conn, curr = connect_db()
+
+    if request.method == "POST":
+        # consultar se livro não foi emprestado
+        if request.form["posicao"] != '': 
+            obra = Obra(posicao=request.form["posicao"])
+            dar_baixa_obra(request.form["posicao"])
+            obra = obra.get()
+            #print(obra.titulo)
+            #titulo, data_emprestimo, data_devolucao = obra.emprestar(cliente_id=session["cliente_id"])
+            return render_template("baixa_sucesso.html", obra=obra)
 
 
 @app.route("/funcionario/obra/check-remocao")
@@ -446,7 +528,7 @@ def remover_obra():
         obra = Obra(posicao=request.form["posicao"])
 
         if obra.get():
-            titulo, autor, assunto, data, posicao = obra.get_data()
+            titulo, autor, assunto, data, posicao, id = obra.get_data()
             session["titulo_obra"] = titulo
             session["posicao_obra"] = posicao
             return render_template("remocao_obra_sucesso.html", titulo=titulo, autor=autor, assunto=assunto, data=data, posicao=posicao)
@@ -503,6 +585,14 @@ def responder_reclamacao():
             update_reclamacao(session["reclamacao"][0])
             return render_template("resposta_acerto.html")
 
+@app.route("/funcionario/check-cobranca-devolucao")
+def tela_cobranca():
+    if session_funcionario:
+        atrasos = get_emprestimo_atraso()
+        return render_template("cobranca_atraso.html", atrasos=atrasos)
+
+    return redirect( url_for("index") )
+
 @app.route("/logout")
 def logout():
     global session_cliente
@@ -519,4 +609,4 @@ def logout():
 
 if __name__ == "__main__":
     create_db()
-    app.run()
+    app.run(ssl_context="adhoc")

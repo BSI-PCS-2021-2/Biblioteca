@@ -37,7 +37,8 @@ CREATE TABLE obra (
     nome_autor TEXT UNIQUE NOT NULL,
     assunto TEXT NOT NULL,
     data_publicacao TEXT NOT NULL,
-    posicao TEXT NOT NULL
+    posicao TEXT NOT NULL,
+    baixa BOOLEAN DEFAULT(TRUE)
 );
 
 DROP TABLE IF EXISTS emprestimo;

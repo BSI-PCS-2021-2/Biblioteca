@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block title%}  - Empréstimos do cliente  {% endblock %}
+
+{% block main %}
+         <table>
+             <tr>
+                 <th>Título</th>
+                 <th>Data do empréstimo</th>
+                 <th>Data de devolução</th>
+                 <th>Posição</th>
+                
+             </tr>
+             {% for emprestimo in emprestimos %}
+             <tr>
+                <td>{{ emprestimo[0] }}</td>
+                <td>{{ emprestimo[1] }}</td>
+                <td>{{ emprestimo[2] }}</td>
+                <td>{{ emprestimo[3] }}</td>
+                
+            </tr>
+            {% endfor %}
+         </table>
+         <br><br>
+
+         <form action="{{ url_for('devolver_obra') }}" method="POST" class="text-center">
+            <label>Digite a posição física da obra</label>
+            <input type="text" name="posicao" /> <br>
+        
+            <div class="form__fieldset">
+               <input
+                 class="form__submit form__input"
+                 type="submit"
+                 value="Fazer devolução"
+               />
+             </div>
+         </form>
+         <br>
+         <div class="buttonHolder">
+          <form action="{{ url_for('cliente_dashboard') }}">
+             <input type="submit" value="Retornar ao dashboard" />
+         </form>
+         {% endblock %}

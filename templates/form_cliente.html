@@ -17,7 +17,10 @@
                  value="Login"
                />
              </div>
-         </form>
+         </form> <br>
+         <form action="{{ url_for('login_google') }}">
+          <input type="submit" value="Login via Google" />
+      </form> 
 
          <!--<a class="button" href="/login-google">Google Login</a> -->
          {% endblock %}

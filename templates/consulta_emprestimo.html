@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block main %}
+<form action="{{ url_for('consulta_emprestimo') }}" method="POST">
+    <label for="cars">Escolha um genero:</label>
+    <select name="assunto" id="genero">
+      <option> </option>
+      {% for genero in generos %}
+      <option value="{{ genero[0] }}">{{ genero[0] }}</option>
+      {% endfor %}
+      <!--<option value="aventura">Aventura</option>
+      <option value="infantil">Infantil</option>
+      <option value="romance">Romance</option>-->
+    </select>
+    <br><br>
+    <!--<input type="submit" value="Pesquisar">
+  </form>-->
+
+  <!--<form action="/arquivo equivalente em python">-->
+    <label for="cars">Escolha um autor:</label>
+    <select name="authorName" id="autor">
+      <option> </option>
+      {% for autor in autores %}}
+      <option value="{{ autor[0] }}">{{ autor[0] }}</option>
+      {% endfor %}
+      <!--<option value="machado">Machado de Assis</option>
+      <option value="amado">Jorge Amado</option>
+      <option value="lobato">Monteiro Lobato</option>-->
+    </select>
+    <br><br>
+    <input type="submit" value="Pesquisar">
+  </form>
+  {% endblock %}
