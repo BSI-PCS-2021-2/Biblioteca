@@ -222,7 +222,7 @@ def get_by_genero(genero):
 def get_obra_sem_baixa():
     conn, cur = connect_db()
 
-    sql = "SELECT titulo, nome_autor, assunto, posicao FROM obra WHERE baixa = 0"
+    sql = "SELECT titulo, nome_autor, assunto, posicao FROM obra INNER JOIN emprestimo ON obra_id = obra.id WHERE baixa = 0 AND devolvido = 1"
     results = cur.execute(sql).fetchall()
 
     return results

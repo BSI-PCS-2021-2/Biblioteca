@@ -11,6 +11,8 @@ from funcionario import Funcionario
 from obra import *
 from reclamacao import *
 
+from envio_email import *
+
 from oauthlib.oauth2 import WebApplicationClient
 import requests
 
@@ -583,6 +585,7 @@ def responder_reclamacao():
         else:
             session["reclamacao"][0]
             update_reclamacao(session["reclamacao"][0])
+            enviar_email(session["reclamacao"][1], request.form["reclamacaoText"])
             return render_template("resposta_acerto.html")
 
 @app.route("/funcionario/check-cobranca-devolucao")
