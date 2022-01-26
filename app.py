@@ -228,7 +228,8 @@ def tela_consulta():
     if session_cliente:
         autores = get_autores()
         generos = get_generos()
-        return render_template("consulta_emprestimo.html", autores=autores, generos=generos)
+        obras = get_obras_titulos()
+        return render_template("consulta_emprestimo.html", autores=autores, generos=generos, obras=obras)
     else:
         return redirect( url_for("index") )
 
@@ -242,13 +243,39 @@ def consulta_emprestimo():
     if request.method == "POST":
         # consultar se livro não foi emprestado
 
-        if request.form["authorName"] == '' and request.form["assunto"] == '':
+        if request.form["authorName"] == '' and request.form["assunto"] == '' and request.form["obraName"] == '':
             return render_template("emprestimo_consulta_insucesso.html")
         
         else:
+            if request.form["assunto"] != '' and request.form["authorName"] != '' and request.form["obraName"] != '':
+                # todos os campos preenchidos
+                print("t1")
+                results = get_by_all(
+                    nome_autor=request.form["authorName"], 
+                    genero=request.form["assunto"], 
+                    titulo=request.form["obraName"]
+                )
+                print(results)
+                return render_template("consulta_sucesso.html", results=results)
+
             if request.form["assunto"] != '' and request.form["authorName"] != '':
+                # genero e autor preenchidos
                 print("t1")
                 results = get_by_ag(nome_autor=request.form["authorName"], genero=request.form["assunto"])
+                print(results)
+                return render_template("consulta_sucesso.html", results=results)
+
+            if request.form["assunto"] != '' and request.form["obraName"] != '':
+                # genero e titulo preenchidos
+                print("t1")
+                results = get_by_gt(titulo=request.form["obraName"], genero=request.form["assunto"])
+                print(results)
+                return render_template("consulta_sucesso.html", results=results)
+
+            if request.form["authorName"] != '' and request.form["obraName"] != '':
+                # autor e titulo preenchidos
+                print("t1")
+                results = get_by_at(titulo=request.form["obraName"], nome_autor=request.form["authorName"])
                 print(results)
                 return render_template("consulta_sucesso.html", results=results)
             
@@ -261,6 +288,12 @@ def consulta_emprestimo():
             if request.form["authorName"] != '':
                 print("t3")
                 results = get_by_author(nome_autor=request.form["authorName"])
+                print(results)
+                return render_template("consulta_sucesso.html", results=results)
+
+            if request.form["obraName"] != '':
+                print("t3")
+                results = get_by_titulo(titulo=request.form["obraName"])
                 print(results)
                 return render_template("consulta_sucesso.html", results=results)
 
@@ -285,6 +318,9 @@ def emprestimo():
             obra = obra.get()
             print(obra.titulo)
             titulo, data_emprestimo, data_devolucao = obra.emprestar(cliente_id=session["cliente_id"])
+            data_emprestimo = data_emprestimo.strftime("%d/%m/%Y")
+            data_devolucao = data_devolucao.strftime("%d/%m/%Y")
+            
             return render_template("emprestimo_sucesso.html", obra=obra, data_emprestimo=data_emprestimo, data_devolucao=data_devolucao)
 
 @app.route("/cliente/check-obras-emprestadas")
@@ -585,16 +621,35 @@ def responder_reclamacao():
         else:
             session["reclamacao"][0]
             update_reclamacao(session["reclamacao"][0])
-            enviar_email(session["reclamacao"][1], request.form["reclamacaoText"])
+            enviar_email_reclamacao(session["reclamacao"][1], request.form["reclamacaoText"])
             return render_template("resposta_acerto.html")
 
 @app.route("/funcionario/check-cobranca-devolucao")
 def tela_cobranca():
     if session_funcionario:
         atrasos = get_emprestimo_atraso()
+        
         return render_template("cobranca_atraso.html", atrasos=atrasos)
 
     return redirect( url_for("index") )
+
+@app.route("/funcionario/check-cobranca-devolucao", methods=['GET', 'POST'])
+def cobrar_devolucao():
+
+    if request.method == "POST":
+        if request.form["posicao"] == '':
+            return render_template("cobranca_insucesso.html")
+
+        emprestimo = get_emprestimo_posicao(request.form["posicao"])
+
+        if emprestimo is None:
+            return render_template("cobranca_insucesso.html")
+
+        enviar_email_cobranca(emprestimo[0], emprestimo[1])
+
+        return render_template("cobranca_sucesso.html", titulo=emprestimo[1])
+
+    return render_template("cobranca_insucesso.html")
 
 @app.route("/logout")
 def logout():

@@ -124,8 +124,9 @@ def get_emprestimo(cliente_id, obra_posicao):
     conn, cursor = connect_db()
 
     sql = """
-        SELECT titulo, DATE(data_emprestimo), DATE(data_devolucao), emprestimo.id
+        SELECT titulo, DATE(data_emprestimo), DATE(data_devolucao), emprestimo.id, cliente.email
         FROM emprestimo INNER JOIN obra ON obra_id = obra.id 
+        INNER JOIN cliente on cliente_id = cliente.id
          WHERE cliente_id = {} AND posicao = '{}' ORDER BY data_emprestimo ASC LIMIT 1
     """.format(cliente_id, obra_posicao)
     #print(sql)
@@ -185,6 +186,15 @@ def get_generos():
     generos = curr.execute(sql).fetchall()
 
     return generos
+
+def get_obras_titulos():
+    conn, curr = connect_db()
+
+    sql = "SELECT DISTINCT titulo FROM obra"
+
+    obras = curr.execute(sql).fetchall()
+
+    return obras
     
 def get_by_ag(nome_autor, genero):
     conn, cur = connect_db()
@@ -219,6 +229,55 @@ def get_by_genero(genero):
 
     return results
 
+def get_by_all(genero, nome_autor, titulo):
+    conn, cur = connect_db()
+    
+    sql = """SELECT titulo, nome_autor, assunto, posicao, devolvido 
+    FROM obra LEFT JOIN emprestimo ON obra.id = obra_id WHERE assunto = '{}' AND nome_autor = '{}'
+    AND titulo = '{}' AND baixa = 1
+    """.format(genero, nome_autor, titulo)
+    #print(sql)
+    results = cur.execute(sql).fetchall()
+
+    return results
+
+def get_by_gt(genero, titulo):
+    conn, cur = connect_db()
+    
+    sql = """SELECT titulo, nome_autor, assunto, posicao, devolvido 
+    FROM obra LEFT JOIN emprestimo ON obra.id = obra_id WHERE assunto = '{}'
+    AND titulo = '{}' AND baixa = 1
+    """.format(genero, titulo)
+    #print(sql)
+    results = cur.execute(sql).fetchall()
+
+    return results
+
+def get_by_at(titulo, nome_autor):
+    conn, cur = connect_db()
+    
+    sql = """SELECT titulo, nome_autor, assunto, posicao, devolvido 
+    FROM obra LEFT JOIN emprestimo ON obra.id = obra_id WHERE nome_autor = '{}'
+    AND titulo = '{}' AND baixa = 1
+    """.format(nome_autor, titulo)
+    #print(sql)
+    results = cur.execute(sql).fetchall()
+
+    return results
+
+def get_by_titulo(titulo):
+    conn, cur = connect_db()
+    
+    sql = """SELECT titulo, nome_autor, assunto, posicao, devolvido 
+    FROM obra LEFT JOIN emprestimo ON obra.id = obra_id WHERE titulo = '{}' AND baixa = 1
+    """.format(titulo)
+    #print(sql)
+    results = cur.execute(sql).fetchall()
+
+    return results
+
+
+
 def get_obra_sem_baixa():
     conn, cur = connect_db()
 
@@ -241,7 +300,7 @@ def get_emprestimo_atraso():
     conn, cur = connect_db()
 
     sql = """
-    SELECT cliente.name, cliente.email, obra.titulo, DATE(emprestimo.data_emprestimo), DATE(emprestimo.data_devolucao) 
+    SELECT cliente.name, cliente.email, obra.titulo, DATE(emprestimo.data_emprestimo), DATE(emprestimo.data_devolucao), posicao, cliente_id
     FROM emprestimo INNER JOIN obra ON emprestimo.obra_id = obra.id
     INNER JOIN cliente ON cliente.id = emprestimo.cliente_id 
     WHERE emprestimo.data_devolucao < date('now')
@@ -253,9 +312,26 @@ def get_emprestimo_atraso():
 
     return results
 
+def get_emprestimo_posicao(posicao):
+    conn, cur = connect_db()
+
+    sql = """
+        SELECT cliente.email, obra.titulo FROM obra 
+        INNER JOIN emprestimo ON obra_id = obra.id
+        INNER JOIN cliente ON cliente_id = cliente.id
+        WHERE obra.posicao = '{}' AND devolvido = 0
+    """.format(posicao)
+
+    results = cur.execute(sql).fetchone()
+
+    if results is None:
+        return None
+
+    return results
+
 
 create_db()
-print(get_emprestimo_atraso())
+print(get_emprestimo_posicao('A1'))
 #print(get_generos(), get_autores())
 #print(get_by_ag(nome_autor="Tiago N", genero="Romance"))
 #print(get_by_author(nome_autor="Tiago N"))

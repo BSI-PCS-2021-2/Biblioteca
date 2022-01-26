@@ -9,7 +9,7 @@
                  <th>Autor</th>
                  <th>Assunto</th>
                  <th>Posição</th>
-                 <th>Emprestado?</th>
+                 <!--<th>Emprestado?</th>-->
              </tr>
              {% for result in results %}
              <tr>
@@ -17,11 +17,11 @@
                 <td>{{ result[1] }}</td>
                 <td>{{ result[2] }}</td>
                 <td>{{ result[3] }}</td>
-                {% if result[4] == 1 or result[4] is none %}
+                <!--{% if result[4] == 1 or result[4] is none %}
                 <td>Não</td>
                 {% else %}
                 <td>Sim</td>
-                {% endif %}
+                {% endif %}-->
             </tr>
             {% endfor %}
          </table>
@@ -39,4 +39,10 @@
                />
              </div>
          </form>
+         <div class="buttonHolder">
+          <form action="{{ url_for('cliente_dashboard') }}">
+             <input type="submit" value="Retornar ao dashboard" />
+         </form>
+         
+    </div>
          {% endblock %}
