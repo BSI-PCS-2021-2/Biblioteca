@@ -10,6 +10,7 @@
                  <th>Título</th>
                  <th>Data do empréstimo</th>
                  <th>Data de devolução</th>
+                 <th>Posição</th>
                 
              </tr>
              {% for atraso in atrasos %}
@@ -19,13 +20,14 @@
                 <td>{{ atraso[2] }}</td>
                 <td>{{ atraso[3] }}</td>
                 <td>{{ atraso[4] }}</td>
+                <td>{{ atraso[5] }}</td>
                 
             </tr>
             {% endfor %}
          </table>
          <br><br>
 
-         <form action="{{ url_for('devolver_obra') }}" method="POST" class="text-center">
+         <form action="{{ url_for('cobrar_devolucao') }}" method="POST" class="text-center">
             <label>Digite a posição física da obra</label>
             <input type="text" name="posicao" /> <br>
         
@@ -33,13 +35,15 @@
                <input
                  class="form__submit form__input"
                  type="submit"
-                 value="Fazer devolução"
+                 value="Fazer cobrança"
                />
              </div>
          </form>
          <br>
          <div class="buttonHolder">
-          <form action="{{ url_for('cliente_dashboard') }}">
-             <input type="submit" value="Retornar ao dashboard" />
-         </form>
+            <form action="{{ url_for('func_check_dashboard') }}">
+               <input type="submit" value="Retornar ao início" />
+           </form>
+           
+      </div>
          {% endblock %}

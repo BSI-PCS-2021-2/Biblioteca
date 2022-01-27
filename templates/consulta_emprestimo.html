@@ -2,7 +2,7 @@
 
 {% block main %}
 <form action="{{ url_for('consulta_emprestimo') }}" method="POST">
-    <label for="cars">Escolha um genero:</label>
+    <label for="generos">Escolha um genero:</label>
     <select name="assunto" id="genero">
       <option> </option>
       {% for genero in generos %}
@@ -17,11 +17,22 @@
   </form>-->
 
   <!--<form action="/arquivo equivalente em python">-->
-    <label for="cars">Escolha um autor:</label>
+    <label for="autores">Escolha um autor:</label>
     <select name="authorName" id="autor">
       <option> </option>
       {% for autor in autores %}}
       <option value="{{ autor[0] }}">{{ autor[0] }}</option>
+      {% endfor %}
+      <!--<option value="machado">Machado de Assis</option>
+      <option value="amado">Jorge Amado</option>
+      <option value="lobato">Monteiro Lobato</option>-->
+    </select>
+    <br><br>
+    <label for="autores">Escolha uma obra:</label>
+    <select name="obraName" id="obra">
+      <option> </option>
+      {% for obra in obras %}}
+      <option value="{{ obra[0] }}">{{ obra[0] }}</option>
       {% endfor %}
       <!--<option value="machado">Machado de Assis</option>
       <option value="amado">Jorge Amado</option>

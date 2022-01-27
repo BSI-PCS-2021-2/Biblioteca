@@ -4,6 +4,18 @@
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
       <meta name="description" content="Software para controle da Biblioteca">
+
+      <!-- Global site tag (gtag.js) - Google Analytics -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-PQW353Y4KV"></script>
+      <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-PQW353Y4KV');
+      ga('send', 'pageview');
+      </script>
+
       <link rel="preconnect" href="https://fonts.googleapis.com/%22%3E">
       <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500&family=Moon+Dance&display=swap" rel="stylesheet">
@@ -12,6 +24,7 @@
       <title>Biblioteca</title>
    </head>
    <body>
+   
       <header>
          <nav>
             <h1 class="text-center">Biblioteca {% block title %} {% endblock %}</h1>
