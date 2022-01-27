@@ -542,9 +542,13 @@ def dar_baixa():
             obra = Obra(posicao=request.form["posicao"])
             dar_baixa_obra(request.form["posicao"])
             obra = obra.get()
+            
+            if obra is None:
+                return render_template("baixa_insucesso.html")
             #print(obra.titulo)
             #titulo, data_emprestimo, data_devolucao = obra.emprestar(cliente_id=session["cliente_id"])
             return render_template("baixa_sucesso.html", obra=obra)
+        return render_template("baixa_insucesso.html")
 
 
 @app.route("/funcionario/obra/check-remocao")
@@ -616,7 +620,7 @@ def responder_reclamacao():
         return "Cadastro necessário"
 
     if request.method == "POST":
-        if request.form["reclamacaoText"] is None:
+        if request.form["reclamacaoText"] == '':
             return render_template("resposta_erro.html")
         else:
             session["reclamacao"][0]
